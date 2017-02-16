@@ -52,6 +52,7 @@ export default {
                 yearFocused: true,
                 monthFocused: undefined,
                 dayFocused: undefined,
+                currentFocuse: 1,   //remember the latest focuse component in [input_year, input_month, input_day]
                 value
             };
         },
@@ -71,7 +72,6 @@ export default {
             this.onChange(_inputYearValue, _inputMonthValue, _inputDayValue);
         },
         onChange(v1 = this.state.inputYearValue, v2 = this.state.inputMonthValue, v3 = this.state.inputDayValue) {
-            console.log('onCHange', v1, v2, v3);
             let value = new Date(parseInt(v1), parseInt(v2) - 1, parseInt(v3));
             this.setState({
                 inputYearValue: v1,
@@ -137,13 +137,12 @@ export default {
                     val = props.max;
                 }
             } else {
-                console.log('something happend');
+                console.log('transform the input value error!!!');
                 val = props.defaultValue;
             }
             return this.toPrecisionAsStep(val);
         },
         validateValue(value, minValue, maxValue) {
-            console.log('ddd', value, minValue, maxValue);
             if (parseInt(value) < parseInt(minValue)) {
                 return parseInt(minValue)
             }
@@ -161,10 +160,19 @@ export default {
             );
         },
         setFocus(f1, f2, f3) {
+            let index;
+            if (f1) {
+               index = 1; 
+            } else if (f2) {
+                index = 2;
+            } else if (f3) {
+                index = 3;
+            }
             this.setState({
                 yearFocused: f1,
                 monthFocused: f2,
-                dayFocused: f3
+                dayFocused: f3,
+                currentFocuse: index
             });
         },
         getPrecision() {
@@ -221,15 +229,14 @@ export default {
                 return;
             }
             let value;
-            const { inputYearValue, inputMonthValue, inputDayValue, yearFocused, monthFocused, dayFocused } = this.state;
-            if (yearFocused) {
+            const { inputYearValue, inputMonthValue, inputDayValue, currentFocuse } = this.state;
+            if (currentFocuse == 1) { 
                 value = this.getCurrentValidValue(inputYearValue);
-            } else if (monthFocused) {
+            } else if (currentFocuse == 2) {
                 value = this.getCurrentValidValue(inputMonthValue);
-            } else if (dayFocused) {
+            } else if (currentFocuse == 3) {
                 value = this.getCurrentValidValue(inputDayValue);
             }
-            console.log('value...', value);
             if (isNaN(value)) {
                 return;
             }
@@ -237,14 +244,14 @@ export default {
             if (val > props.max || val < props.min) {
                 return;
             }
-            if (yearFocused) {
+            if (currentFocuse == 1) {
                 this.setValue(val, inputMonthValue, inputDayValue);
                 this.setFocus(true, false, false);
-            } else if (monthFocused) {
+            } else if (currentFocuse == 2) {
                 this.setValue(inputYearValue, val, inputDayValue);
                 this.setFocus(false, true, false);
-            } else if (dayFocused) {
-                this.setValue(inputDayValue, inputMonthValue, val);
+            } else if (currentFocuse == 3) {
+                this.setValue(inputYearValue, inputMonthValue, val);
                 this.setFocus(false, false, true);
             }
         },

@@ -49,7 +49,6 @@ const InputDate = React.createClass({
         }
     },
     onKeyDown(e, ...args) {
-        console.log('dd', this.props);
         if (e.keyCode === 38) {
             this.up(e);
         } else if (e.keyCode === 40) {
@@ -93,26 +92,8 @@ const InputDate = React.createClass({
             [`${prefixCls}-focused`]: this.state.focused,
             [`${prefixCls}-${size}`]: !!size
         });
-        let upDisabledClass = '';
-        let downDisabledClass = '';
-        const value = this.state.value;
-        if (!isNaN(value)) {
-            const val = Number(value);
-            if (val >= props.max) {
-                upDisabledClass = `${prefixCls}-handler-up-disabled`;
-            }
-            if (val <= props.min) {
-                downDisabledClass = `${prefixCls}-handler-down-disabled`;
-            }
-        } else {
-            upDisabledClass = `${prefixCls}-handler-up-disabled`;
-            downDisabledClass = `${prefixCls}-handler-down-disabled`;
-        }
 
-        const editable = !props.readOnly && !props.disabled;
-
-        // focus state, show input value
-        // unfocus state, show valid value
+        // const editable = !props.readOnly && !props.disabled;
 
         let inputYearValue = this.leadingZeroHnadler(this.state.inputYearValue, 'year');
         let inputMonthValue = this.leadingZeroHnadler(this.state.inputMonthValue, 'month');
@@ -137,29 +118,23 @@ const InputDate = React.createClass({
             < div className = { `${prefixCls}-handler-wrap` } >
             < a unselectable = "unselectable"
             ref = "up"
-            onTouchStart = {
-                (editable && !upDisabledClass) ? this.up : noop
-            }
             onTouchEnd = { this.stop }
             onMouseDown = {
-                (editable && !upDisabledClass) ? this.up : noop
+                this.up
             }
             onMouseUp = { this.stop }
             onMouseLeave = { this.stop }
-            className = { `${prefixCls}-handler-up ${upDisabledClass}` } >
+            className = { `${prefixCls}-handler-up` } >
             < span unselectable = "unselectable"
             onClick = { preventDefault } > + < /span> < /a > < a unselectable = "unselectable"
             ref = "down"
-            onTouchStart = {
-                (editable && !downDisabledClass) ? this.down : noop
-            }
             onTouchEnd = { this.stop }
             onMouseDown = {
-                (editable && !downDisabledClass) ? this.down : noop
+                this.down
             }
             onMouseUp = { this.stop }
             onMouseLeave = { this.stop }
-            className = { `${prefixCls}-handler-down ${downDisabledClass}` } >
+            className = { `${prefixCls}-handler-down` } >
             < span unselectable = "unselectable"
             onClick = { preventDefault } > - < /span> < /a > < /div> < div className = { `${prefixCls}-input-wrap` } > 
             < input {...props }
@@ -169,7 +144,7 @@ const InputDate = React.createClass({
             autoComplete = "off"
             onFocus = { this.onYearFocus }
             onBlur = { this.onBlur } 
-            onKeyDown = { this.onKeyDown }
+            onKeyDown = { this.onKeyDown } 
             readOnly = { props.readOnly }
             disabled = { props.disabled }
             name = { props.name }
@@ -179,7 +154,7 @@ const InputDate = React.createClass({
             年 < input {...props }
             ref = "input_month"
             style = { null }
-            className = { `${prefixCls}-input` }
+            className = { `${prefixCls}-small` }
             autoComplete = "off"
             onFocus = { this.onMonthFocus }
             onBlur = { this.onBlur }
@@ -193,7 +168,7 @@ const InputDate = React.createClass({
             月 < input {...props }
             ref = "input_day"
             style = { null }
-            className = { `${prefixCls}-input` }
+            className = { `${prefixCls}-small` }
             autoComplete = "off"
             onFocus = { this.onDayFocus }
             onBlur = { this.onBlur }
