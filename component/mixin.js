@@ -1,5 +1,4 @@
-function noop() {
-}
+function noop() {}
 
 /**
  * When click and hold on a button - the speed of auto changin the value.
@@ -14,262 +13,245 @@ const DELAY = 600;
 
 export default {
     getDefaultProps() {
-        return {
-            max: Infinity,
-            min: -Infinity,
-            step: 1,
-            style: {},
-            defaultValue: null,
-            onChange: noop,
-            onKeyDown: noop,
-            onFocus: noop,
-            onBlur: noop
-        };
-    },
-    getInitialState() {
-        let value;
-        const props = this.props;
-        console.log('props', props)
-        if ('value' in props) {
-            value = props.value;
-        } else {
-            value = props.defaultValue;
-        }
-        const { inputYearValue, inputMonthValue, inputDayValue } = props;
-        let _inputYearValue = inputYearValue ? inputYearValue : props.defaultValue;
-        let _inputMonthValue = inputMonthValue ? inputMonthValue : props.defaultValue;
-        let _inputDayValue = inputDayValue ? inputDayValue : props.defaultValue;
-        _inputYearValue = this.toPrecisionAsStep(_inputYearValue);
-        _inputMonthValue = this.toPrecisionAsStep(_inputMonthValue);
-        _inputDayValue = this.toPrecisionAsStep(_inputDayValue);
-
-        value = this.toPrecisionAsStep(value);
-        console.log('props.autoFocus', props.autoFocus);
-        return {
-            inputValue: value,
-            inputYearValue: _inputYearValue,
-            inputMonthValue: _inputMonthValue,
-            inputDayValue: _inputDayValue,
-            value,
-            yearFocused: undefined,
-            monthFocused: undefined,
-            dayFocused: undefined,
-            focused: props.autoFocus
-        };
-    },
-    componentWillReceiveProps(nextProps) {
-        const { inputYearValue, inputMonthValue, inputDayValue } = nextProps;
-        let _inputYearValue = inputYearValue ? inputYearValue : props.defaultValue;
-        let _inputMonthValue = inputMonthValue ? inputMonthValue : props.defaultValue;
-        let _inputDayValue = inputDayValue ? inputDayValue : props.defaultValue;
-        _inputYearValue = this.toPrecisionAsStep(_inputYearValue);
-        _inputMonthValue = this.toPrecisionAsStep(_inputMonthValue);
-        _inputDayValue = this.toPrecisionAsStep(_inputDayValue);
-        this.setState({
-            inputValue: value,
-            inputYearValue: _inputYearValue,
-            inputMonthValue: _inputMonthValue,
-            inputDayValue: _inputDayValue,
-            value,
-        })
-        // if ('value' in nextProps) {
-        //     const value = this.toPrecisionAsStep(nextProps.value);
-        //     this.setState({
-        //         inputValue: value,
-        //         value
-        //     });
-        // }
-    },
-    componentWillUnmount() {
-        this.stop();
-    },
-    onChange(e) {
-        this.setInputValue(this.getValueFromEvent(e).trim());
-    },
-    onYearFocus(...args) {
-        this.setState({
-            yearFocused: true,
-            monthFocused: false,
-            dayFocused: false,
-        });
-        this.props.onFocus(...args);//execute user's function
-    },
-    onMonthFocus(...args) {
-        this.setState({monthFocused: true});
-        this.setState({
-            yearFocused: false,
-            monthFocused: true,
-            dayFocused: false,
-        });
-        this.props.onFocus(...args);
-    },
-    onDayFocus(...args) {
-        this.setState({
-            yearFocused: false,
-            monthFocused: false,
-            dayFocused: true,
-        });
-        this.props.onFocus(...args);
-    },
-    onBlur(e, ...args) {
-        const { yearFocused, monthFocused, dayFocused } = this.state;
-        let inputYearValue, inputMonthValue, inputDayValue;
-        if (yearFocused) {
-            inputYearValue = this.getCurrentValidValue(this.getValueFromEvent(e).trim());
-        } else if (monthFocused) {
-            inputMonthValue = this.getCurrentValidValue(this.getValueFromEvent(e).trim());
-        } else {
-            inputDayValue = this.getCurrentValidValue(this.getValueFromEvent(e).trim());
-        }
-        this.setState({
-            yearFocused: false,
-            monthFocused: false,
-            dayFocused: false,
-        });
-        // this.setState({focused: false});
-        
-        this.setValue(inputYearValue, inputMonthValue, inputDayValue);
-        this.props.onBlur(e, ...args);
-    },
-    getCurrentValidValue(value) {
-        let val = value;
-        const props = this.props;
-        if (val === '') {
-            val = '';
-        } else if (!isNaN(val)) {
-            val = Number(val);
-            if (val < props.min) {
-                val = props.min;
+            return {
+                max: Infinity, //Infinity means the positive infinity
+                min: 0,
+                maxYear: 9999,
+                minYear: 0,
+                maxMonth: 12,
+                minMonth: 0,
+                maxDay: 31, //the max date should judge by the year
+                minDay: 0,
+                step: 1,
+                style: {},
+                defaultValue: new Date().getTime(),
+                onChange: noop,
+                onKeyDown: noop,
+                onFocus: noop,
+                onBlur: noop
+            };
+        },
+        getInitialState() {
+            const props = this.props;
+            let value;
+            if ('value' in props) {
+                value = new Date(props.value);
+            } else {
+                value = new Date(props.defaultValue);
             }
-            if (val > props.max) {
-                val = props.max;
+            let _inputYearValue = value.getFullYear();
+            let _inputMonthValue = value.getMonth();
+            let _inputDayValue = value.getDate();
+            _inputYearValue = this.toPrecisionAsStep(_inputYearValue);
+            _inputMonthValue = this.toPrecisionAsStep(_inputMonthValue);
+            _inputDayValue = this.toPrecisionAsStep(_inputDayValue);
+            return {
+                inputYearValue: _inputYearValue,
+                inputMonthValue: _inputMonthValue,
+                inputDayValue: _inputDayValue,
+                yearFocused: true,
+                monthFocused: undefined,
+                dayFocused: undefined,
+                value
+            };
+        },
+        componentWillReceiveProps(nextProps) {
+            let value;
+            if ('value' in nextProps) {
+                value = new Date(props.value);
+            } else {
+                value = new Date(props.defaultValue);
             }
-        } else {
-            val = this.state.value;
-        }
-        return this.toPrecisionAsStep(val);
-    },
-    setValue(v1, v2, v3) {
-        if (!('value' in this.props)) {
+            let _inputYearValue = value.getFullYear();
+            let _inputMonthValue = value.getMonth();
+            let _inputDayValue = value.getDate();
+            _inputYearValue = this.toPrecisionAsStep(_inputYearValue);
+            _inputMonthValue = this.toPrecisionAsStep(_inputMonthValue);
+            _inputDayValue = this.toPrecisionAsStep(_inputDayValue);
+            this.onChange(_inputYearValue, _inputMonthValue, _inputDayValue);
+        },
+        onChange(v1 = this.state.inputYearValue, v2 = this.state.inputMonthValue, v3 = this.state.inputDayValue) {
+            console.log('onCHange', v1, v2, v3);
+            let value = new Date(parseInt(v1), parseInt(v2) - 1, parseInt(v3));
             this.setState({
-                value: v,
-                inputValue: v,
                 inputYearValue: v1,
                 inputMonthValue: v2,
                 inputDayValue: v3,
+                value
             });
-        }
-        const newValue = isNaN(v) || v === '' ? undefined : v;
-        if (newValue !== this.state.value) {
-            this.props.onChange(newValue);
-        } else {
-            // revert input value
+        },
+        onChangeYear(e) {
+            const { maxYear, minYear } = this.props;
+            const year = this.getValueFromEvent(e).trim();
+            this.onChange(this.validateValue(year, minYear, maxYear));
+        },
+        onChangeMonth(e) {
+            const { maxMonth, minMonth } = this.props;
+            const month = this.getValueFromEvent(e).trim();
+            this.onChange(undefined, this.validateValue(month, minMonth, maxMonth));
+        },
+        onChangeDay(e) {
+            const { maxDay, minDay } = this.props;
+            const date = this.getValueFromEvent(e).trim();
+            this.onChange(undefined, undefined, this.validateValue(date, minDay, maxDay));
+        },
+        onYearFocus(...args) {
+            this.setFocus(true, false, false);
+            this.props.onFocus(...args); //execute user's function
+        },
+        onMonthFocus(...args) {
+            this.setFocus(false, true, false);
+            this.props.onFocus(...args);
+        },
+        onDayFocus(...args) {
+            this.setFocus(false, false, true);
+            this.props.onFocus(...args);
+        },
+        onBlur(e, ...args) {
+            const { yearFocused, monthFocused, dayFocused, inputYearValue, inputMonthValue, inputDayValue } = this.state;
+            let _inputYearValue = inputYearValue;
+            let _inputMonthValue = inputMonthValue;
+            let _inputDayValue = inputDayValue;
+            if (yearFocused) {
+                _inputYearValue = this.getCurrentValidValue(this.getValueFromEvent(e).trim());
+            } else if (monthFocused) {
+                _inputMonthValue = this.getCurrentValidValue(this.getValueFromEvent(e).trim());
+            } else {
+                _inputDayValue = this.getCurrentValidValue(this.getValueFromEvent(e).trim());
+            }
+            this.setFocus(false, false, false);
+            this.setValue(_inputYearValue, _inputMonthValue, _inputDayValue);
+            this.props.onBlur(e, ...args);
+        },
+        getCurrentValidValue(value) {
+            let val = value;
+            const props = this.props;
+            if (val === '') {
+                val = '';
+            } else if (!isNaN(val)) {
+                val = Number(val);
+                if (val < props.min) {
+                    val = props.min;
+                }
+                if (val > props.max) {
+                    val = props.max;
+                }
+            } else {
+                console.log('something happend');
+                val = props.defaultValue;
+            }
+            return this.toPrecisionAsStep(val);
+        },
+        validateValue(value, minValue, maxValue) {
+            console.log('ddd', value, minValue, maxValue);
+            if (parseInt(value) < parseInt(minValue)) {
+                return parseInt(minValue)
+            }
+            if (parseInt(value) > parseInt(maxValue)) {
+                return parseInt(maxValue)
+            }
+            return parseInt(value);
+        },
+        setValue(v1, v2, v3) {
+            const { maxYear, minYear, maxMonth, minMonth, maxDay, minDay } = this.props;
+            this.onChange(
+                this.validateValue(v1, minYear, maxYear),
+                this.validateValue(v2, minMonth, maxMonth),
+                this.validateValue(v3, minDay, maxDay)
+            );
+        },
+        setFocus(f1, f2, f3) {
             this.setState({
-                // inputValue: this.state.value
-                inputYearValue: this.state.inputYearValue,
-                inputMonthValue: this.state.inputMonthValue,
-                inputDayValue: this.state.inputDayValue,
+                yearFocused: f1,
+                monthFocused: f2,
+                dayFocused: f3
             });
-        }
-    },
-    setInputValue(inputValue) {
-        const { yearFocused, monthFocused, dayFocused } = this.state;
-        if (yearFocused) {
-            this.setState({inputYearValue: inputValue});
-        } else if (monthFocused) {
-            this.setState({inputMonthValue: inputValue});
-        } else {
-            this.setState({inputDayValue: inputValue});
-        }
-    },
-    getPrecision() {
-        const props = this.props;
-        const stepString = props.step.toString();
-        if (stepString.indexOf('e-') >= 0) {
-            return parseInt(stepString.slice(stepString.indexOf('e-') + 1), 10);
-        }
-        let precision = 0;
-        if (stepString.indexOf('.') >= 0) {
-            precision = stepString.length - stepString.indexOf('.') - 1;
-        }
-        return precision;
-    },
-    getPrecisionFactor() {
-        const precision = this.getPrecision();
-        return Math.pow(10, precision);
-    },
-    toPrecisionAsStep(num) {
-        if (isNaN(num) || num === '') {
-            return num;
-        }
-        const precision = this.getPrecision();
-        return Number(Number(num).toFixed(Math.abs(precision)));
-    },
-    upStep(val) {
-        const { step, min } = this.props;
-        const precisionFactor = this.getPrecisionFactor();
-        let result;
-        if (typeof val === 'number') {
-            result = (precisionFactor * val + precisionFactor * step) / precisionFactor;
-        } else {
-            result = min === -Infinity ? step : min;
-        }
-        return this.toPrecisionAsStep(result);
-    },
-    downStep(val) {
-        const { step, min } = this.props;
-        const precisionFactor = this.getPrecisionFactor();
-        let result;
-        if (typeof val === 'number') {
-            result = (precisionFactor * val - precisionFactor * step) / precisionFactor;
-        } else {
-            result = min === -Infinity ? -step : min;
-        }
-        return this.toPrecisionAsStep(result);
-    },
-    step(type, e) {
-        if (e) {
-            e.preventDefault();
-        }
-        const props = this.props;
-        if (props.disabled) {
-            return;
-        }
-        const value = this.getCurrentValidValue(this.state.value);
-        this.setState({value});
-        if (isNaN(value)) {
-            return;
-        }
-        const val = this[`${type}Step`](value);
-        if (val > props.max || val < props.min) {
-            return;
-        }
-        this.setValue(val);
-        this.setState({focused: true});
-    },
-    stop() {
-        if (this.autoStepTimer) {
-            clearTimeout(this.autoStepTimer);
-        }
-    },
-    down(e, recursive) {
-        if (e.persist) {
-            e.persist();
-        }
-        this.stop();
-        this.step('down', e);
-        this.autoStepTimer = setTimeout(() => {
-            this.down(e, true);
-        }, recursive ? SPEED : DELAY);
-    },
-    up(e, recursive) {
-        if (e.persist) {
-            e.persist();
-        }
-        this.stop();
-        this.step('up', e);
-        this.autoStepTimer = setTimeout(() => {
-            this.up(e, true);
-        }, recursive ? SPEED : DELAY);
-    }
+        },
+        getPrecision() {
+            const props = this.props;
+            const stepString = props.step.toString();
+            if (stepString.indexOf('e-') >= 0) {
+                return parseInt(stepString.slice(stepString.indexOf('e-') + 1), 10);
+            }
+            let precision = 0;
+            if (stepString.indexOf('.') >= 0) {
+                precision = stepString.length - stepString.indexOf('.') - 1;
+            }
+            return precision;
+        },
+        getPrecisionFactor() {
+            const precision = this.getPrecision();
+            return Math.pow(10, precision);
+        },
+        toPrecisionAsStep(num) {
+            if (isNaN(num) || num === '') {
+                return num;
+            }
+            const precision = this.getPrecision();
+            return Number(Number(num).toFixed(Math.abs(precision)));
+        },
+        upStep(val) {
+            const { step, min } = this.props;
+            const precisionFactor = this.getPrecisionFactor();
+            let result;
+            if (typeof val === 'number') {
+                result = (precisionFactor * val + precisionFactor * step) / precisionFactor;
+            } else {
+                result = min === -Infinity ? step : min;
+            }
+            return this.toPrecisionAsStep(result);
+        },
+        downStep(val) {
+            const { step, min } = this.props;
+            const precisionFactor = this.getPrecisionFactor();
+            let result;
+            if (typeof val === 'number') {
+                result = (precisionFactor * val - precisionFactor * step) / precisionFactor;
+            } else {
+                result = min === -Infinity ? -step : min;
+            }
+            return this.toPrecisionAsStep(result);
+        },
+        step(type, e) {
+            if (e) {
+                e.preventDefault();
+            }
+            const props = this.props;
+            if (props.disabled) {
+                return;
+            }
+            let value;
+            const { inputYearValue, inputMonthValue, inputDayValue, yearFocused, monthFocused, dayFocused } = this.state;
+            if (yearFocused) {
+                value = this.getCurrentValidValue(inputYearValue);
+            } else if (monthFocused) {
+                value = this.getCurrentValidValue(inputMonthValue);
+            } else if (dayFocused) {
+                value = this.getCurrentValidValue(inputDayValue);
+            }
+            console.log('value...', value);
+            if (isNaN(value)) {
+                return;
+            }
+            const val = this[`${type}Step`](value); //匹配upStep或者downStep方法调用
+            if (val > props.max || val < props.min) {
+                return;
+            }
+            if (yearFocused) {
+                this.setValue(val, inputMonthValue, inputDayValue);
+                this.setFocus(true, false, false);
+            } else if (monthFocused) {
+                this.setValue(inputYearValue, val, inputDayValue);
+                this.setFocus(false, true, false);
+            } else if (dayFocused) {
+                this.setValue(inputDayValue, inputMonthValue, val);
+                this.setFocus(false, false, true);
+            }
+        },
+        down(e) {
+            this.step('down', e);
+        },
+        up(e) {
+            this.step('up', e);
+        },
 };

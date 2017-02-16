@@ -3,8 +3,7 @@ import React, { PropTypes } from 'react';
 import classNames from 'classnames';
 import mixin from './mixin';
 
-function noop() {
-}
+function noop() {}
 
 function preventDefault(e) {
     e.preventDefault();
@@ -20,6 +19,12 @@ const InputDate = React.createClass({
         readOnly: PropTypes.bool,
         max: PropTypes.number,
         min: PropTypes.number,
+        maxYear: PropTypes.number,
+        minYear: PropTypes.number,
+        maxMonth: PropTypes.number,
+        minMonth: PropTypes.number, 
+        maxDay: PropTypes.number,
+        minDay: PropTypes.number,
         size: PropTypes.oneOf(['lg', 'sm']),
         step: PropTypes.oneOfType([
             PropTypes.number,
@@ -39,12 +44,12 @@ const InputDate = React.createClass({
         this.componentDidUpdate();
     },
     componentDidUpdate() {
-    	// console.log('focused', this.state, this.refs, document.activeElement);
-        if (this.state.focused && document.activeElement !== this.refs.input) {
-            // this.refs.input.focus();
+        if (this.state.yearFocused && document.activeElement !== this.refs.input_year) {
+            this.refs.input_year.focus();
         }
     },
     onKeyDown(e, ...args) {
+        console.log('dd', this.props);
         if (e.keyCode === 38) {
             this.up(e);
         } else if (e.keyCode === 40) {
@@ -55,11 +60,25 @@ const InputDate = React.createClass({
     getValueFromEvent(e) {
         return e.target.value;
     },
-    focus() {
-        this.refs.input.focus();
+    leadingZeroHnadler(value, info) {
+        let result = '';
+        switch (info) {
+            case 'year':
+                if (value == 0) return '0000';
+                break;
+            case 'month':
+                if (value == 0) return '00';
+                break;
+            case 'date':
+                if (value == 0) return '00';
+                break;
+            default:
+                console.log('leading zero error!!!');
+        }
+        return value.toString();
     },
     render() {
-        const props = {...this.props};
+        const props = {...this.props };
         const prefixCls = props.prefixCls;
         let size;
         if ('size' in props) {
@@ -94,33 +113,11 @@ const InputDate = React.createClass({
 
         // focus state, show input value
         // unfocus state, show valid value
-        let inputDisplayValue;
-        if (this.state.focused) {
-            inputDisplayValue = this.state.inputValue;
-        } else {
-            inputDisplayValue = this.state.value;
-        }
 
-        if (inputDisplayValue === undefined) {
-            inputDisplayValue = '';
-        }
-        let inputYearValue, inputMonthValue, inputDayValue;
+        let inputYearValue = this.leadingZeroHnadler(this.state.inputYearValue, 'year');
+        let inputMonthValue = this.leadingZeroHnadler(this.state.inputMonthValue, 'month');
+        let inputDayValue = this.leadingZeroHnadler(this.state.inputDayValue, 'date');
 
-        if (this.state.yearFocused) {
-			inputYearValue = this.state.inputYearValue;
-        } else {
-            inputYearValue = this.state.value;
-        }
-        if (this.state.monthFocused) {
-			inputMonthValue = this.state.inputMonthValue;
-        } else {
-            inputMonthValue = this.state.value;
-        }
-        if (this.state.dayFocused) {
-			inputDayValue = this.state.inputDayValue;
-        } else {
-            inputDayValue = this.state.value;
-        }
         // Remove React warning.
         // Warning: Input elements must be either controlled
         // or uncontrolled (specify either the value prop, or
@@ -129,84 +126,85 @@ const InputDate = React.createClass({
         // https://fb.me/react-unknown-prop
         delete props.prefixCls;
         // ref for test
-        return (
-            <div className={classes} style={props.style}>
-                <div className={`${prefixCls}-handler-wrap`}>
-                    <a unselectable="unselectable"
-                       ref="up"
-                       onTouchStart={(editable && !upDisabledClass) ? this.up : noop}
-                       onTouchEnd={this.stop}
-                       onMouseDown={(editable && !upDisabledClass) ? this.up : noop}
-                       onMouseUp={this.stop}
-                       onMouseLeave={this.stop}
-                       className={`${prefixCls}-handler-up ${upDisabledClass}`}>
-                            <span unselectable="unselectable" onClick={preventDefault}>+</span>
-                    </a>
-                    <a unselectable="unselectable"
-                       ref="down"
-                       onTouchStart={(editable && !downDisabledClass) ? this.down : noop}
-                       onTouchEnd={this.stop}
-                       onMouseDown={(editable && !downDisabledClass) ? this.down : noop}
-                       onMouseUp={this.stop}
-                       onMouseLeave={this.stop}
-                       className={`${prefixCls}-handler-down ${downDisabledClass}`}>
-                            <span unselectable="unselectable" onClick={preventDefault}>-</span>
-                    </a>
-                </div>
-                <div className={`${prefixCls}-input-wrap`}>
-                    <input {...props}
-                        ref="input_year"
-                        style={null}
-                        className={`${prefixCls}-input`}
-                        autoComplete="off"
-                        onFocus={this.onYearFocus}
-                        onBlur={this.onBlur}
-                        onKeyDown={this.onKeyDown}
-                        autoFocus={props.autoFocus}
-                        readOnly={props.readOnly}
-                        disabled={props.disabled}
-                        max={props.max}
-                        min={props.min}
-                        name={props.name}
-                        onChange={this.onChange}
-                        value={inputYearValue}/>
-                        年
-                        <input {...props}
-                        ref="input_month"
-                        style={null}
-                        className={`${prefixCls}-input`}
-                        autoComplete="off"
-                        onFocus={this.onMonthFocus}
-                        onBlur={this.onBlur}
-                        onKeyDown={this.onKeyDown}
-                        autoFocus={props.autoFocus}
-                        readOnly={props.readOnly}
-                        disabled={props.disabled}
-                        max={parseInt(12)}
-                        min={parseInt(0)}
-                        name={props.name}
-                        onChange={this.handleChangeMonth}
-                        value={inputMonthValue}/>
-                        月
-                        <input {...props}
-                        ref="input_day"
-                        style={null}
-                        className={`${prefixCls}-input`}
-                        autoComplete="off"
-                        onFocus={this.onDayFocus}
-                        onBlur={this.onBlur}
-                        onKeyDown={this.onKeyDown}
-                        autoFocus={props.autoFocus}
-                        readOnly={props.readOnly}
-                        disabled={props.disabled}
-                        max={props.max}
-                        min={props.min}
-                        name={props.name}
-                        onChange={this.onChange}
-                        value={inputDayValue}/>
-                        日
-                </div>
-            </div>
+        delete props.maxYear;
+        delete props.minYear;
+        delete props.maxMonth;
+        delete props.minMonth;
+        delete props.maxDay;
+        delete props.minDay;
+        return ( < div className = { classes }
+            style = { props.style } >
+            < div className = { `${prefixCls}-handler-wrap` } >
+            < a unselectable = "unselectable"
+            ref = "up"
+            onTouchStart = {
+                (editable && !upDisabledClass) ? this.up : noop
+            }
+            onTouchEnd = { this.stop }
+            onMouseDown = {
+                (editable && !upDisabledClass) ? this.up : noop
+            }
+            onMouseUp = { this.stop }
+            onMouseLeave = { this.stop }
+            className = { `${prefixCls}-handler-up ${upDisabledClass}` } >
+            < span unselectable = "unselectable"
+            onClick = { preventDefault } > + < /span> < /a > < a unselectable = "unselectable"
+            ref = "down"
+            onTouchStart = {
+                (editable && !downDisabledClass) ? this.down : noop
+            }
+            onTouchEnd = { this.stop }
+            onMouseDown = {
+                (editable && !downDisabledClass) ? this.down : noop
+            }
+            onMouseUp = { this.stop }
+            onMouseLeave = { this.stop }
+            className = { `${prefixCls}-handler-down ${downDisabledClass}` } >
+            < span unselectable = "unselectable"
+            onClick = { preventDefault } > - < /span> < /a > < /div> < div className = { `${prefixCls}-input-wrap` } > 
+            < input {...props }
+            ref = "input_year"
+            style = { null }
+            className = { `${prefixCls}-input` }
+            autoComplete = "off"
+            onFocus = { this.onYearFocus }
+            onBlur = { this.onBlur } 
+            onKeyDown = { this.onKeyDown }
+            readOnly = { props.readOnly }
+            disabled = { props.disabled }
+            name = { props.name }
+            onChange = { this.onChangeYear }
+            value = { inputYearValue }
+            />
+            年 < input {...props }
+            ref = "input_month"
+            style = { null }
+            className = { `${prefixCls}-input` }
+            autoComplete = "off"
+            onFocus = { this.onMonthFocus }
+            onBlur = { this.onBlur }
+            onKeyDown = { this.onKeyDown }
+            readOnly = { props.readOnly }
+            disabled = { props.disabled }
+            name = { props.name }
+            onChange = { this.onChangeMonth }
+            value = { inputMonthValue }
+            />
+            月 < input {...props }
+            ref = "input_day"
+            style = { null }
+            className = { `${prefixCls}-input` }
+            autoComplete = "off"
+            onFocus = { this.onDayFocus }
+            onBlur = { this.onBlur }
+            onKeyDown = { this.onKeyDown }
+            readOnly = { props.readOnly }
+            disabled = { props.disabled }
+            name = { props.name }
+            onChange = { this.onChangeDay }
+            value = { inputDayValue }
+            />
+            日 < /div> < /div >
         );
     }
 });
