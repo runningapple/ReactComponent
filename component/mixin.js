@@ -143,6 +143,7 @@ export default {
             return this.toPrecisionAsStep(val);
         },
         validateValue(value, minValue, maxValue) {
+            if (typeof value === 'undefined' || value === '') value = minValue;
             if (parseInt(value) < parseInt(minValue)) {
                 return parseInt(minValue)
             }
