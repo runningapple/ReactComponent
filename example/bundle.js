@@ -9484,16 +9484,6 @@ var InputDate = _react2.default.createClass({
         readOnly: _react.PropTypes.bool,
         max: _react.PropTypes.number,
         min: _react.PropTypes.number,
-        maxYear: _react.PropTypes.number,
-        minYear: _react.PropTypes.number,
-        maxMonth: _react.PropTypes.number,
-        minMonth: _react.PropTypes.number,
-        maxDay: _react.PropTypes.number,
-        minDay: _react.PropTypes.number,
-        maxHour: _react.PropTypes.number,
-        minHour: _react.PropTypes.number,
-        maxMinute: _react.PropTypes.number,
-        minMinute: _react.PropTypes.number,
         maxDate: _react.PropTypes.number,
         minDate: _react.PropTypes.number,
         size: _react.PropTypes.oneOf(['lg', 'sm']),
@@ -9578,16 +9568,6 @@ var InputDate = _react2.default.createClass({
         // https://fb.me/react-unknown-prop
         delete props.prefixCls;
         // ref for test
-        delete props.maxYear;
-        delete props.minYear;
-        delete props.maxMonth;
-        delete props.minMonth;
-        delete props.maxDay;
-        delete props.minDay;
-        delete props.maxHour;
-        delete props.minHour;
-        delete props.maxMinute;
-        delete props.minMinute;
         delete props.maxDate;
         delete props.minDate;
         return _react2.default.createElement(
@@ -9631,10 +9611,8 @@ var InputDate = _react2.default.createClass({
                         ' - '
                     ),
                     ' '
-                ),
-                ' '
+                )
             ),
-            ' ',
             _react2.default.createElement(
                 'div',
                 { className: prefixCls + '-input-wrap' },
@@ -9652,7 +9630,7 @@ var InputDate = _react2.default.createClass({
                     onChange: this.onChangeYear,
                     value: inputYearValue
                 })),
-                '\u5E74 ',
+                '-',
                 _react2.default.createElement('input', _extends({}, props, {
                     ref: 'input_month',
                     style: null,
@@ -9667,7 +9645,7 @@ var InputDate = _react2.default.createClass({
                     onChange: this.onChangeMonth,
                     value: inputMonthValue
                 })),
-                '\u6708',
+                '-',
                 _react2.default.createElement('input', _extends({}, props, {
                     ref: 'input_day',
                     style: null,
@@ -9682,11 +9660,11 @@ var InputDate = _react2.default.createClass({
                     onChange: this.onChangeDay,
                     value: inputDayValue
                 })),
-                '\u65E5',
+                ' ',
                 _react2.default.createElement('input', _extends({}, props, {
                     ref: 'input_hour',
                     style: null,
-                    className: prefixCls + '-time',
+                    className: prefixCls + '-hour',
                     autoComplete: 'off',
                     onFocus: this.onHourFocus,
                     onBlur: this.onBlur,
@@ -9701,7 +9679,7 @@ var InputDate = _react2.default.createClass({
                 _react2.default.createElement('input', _extends({}, props, {
                     ref: 'input_minute',
                     style: null,
-                    className: prefixCls + '-time',
+                    className: prefixCls + '-minute',
                     autoComplete: 'off',
                     onFocus: this.onMinuteFocus,
                     onBlur: this.onBlur,
@@ -9769,52 +9747,25 @@ exports.default = {
         };
     },
     getInitialState: function getInitialState() {
-        var props = this.props;
-        var value = void 0;
-        if ('value' in props) {
-            value = new Date(props.value);
-        } else {
-            value = new Date(props.defaultValue);
-        }
-        var maxDate = void 0,
-            minDate = void 0;
-        var maxYear = void 0,
-            minYear = void 0,
-            maxMonth = void 0,
-            minMonth = void 0,
-            maxDay = void 0;
-        var minDay = void 0,
-            maxHour = void 0,
-            minHour = void 0,
-            maxMinute = void 0,
-            minMinute = void 0;
+        var _value = void 0;
+        var _props = this.props,
+            value = _props.value,
+            defaultValue = _props.defaultValue,
+            maxDate = _props.maxDate,
+            minDate = _props.minDate;
 
-        if ('maxDate' in props) {
-            maxDate = new Date(props.maxDate);
-            maxYear = maxDate.getFullYear();
-            maxMonth = maxDate.getMonth();
-            maxDay = maxDate.getDate();
-            maxHour = maxDate.getHours();
-            maxMinute = maxDate.getMinutes();
+        if (value) {
+            _value = new Date(value);
+        } else {
+            _value = new Date(defaultValue);
         }
-        if ('minDate' in props) {
-            minDate = new Date(props.minDate);
-            minYear = minDate.getFullYear();
-            minMonth = minDate.getMonth();
-            minDay = minDate.getDate();
-            minHour = minDate.getHours();
-            minMinute = minDate.getMinutes();
-        }
-        var _inputYearValue = value.getFullYear();
-        var _inputMonthValue = value.getMonth();
-        var _inputDayValue = value.getDate();
-        var _inputHourValue = value.getHours();
-        var _inputMinuteValue = value.getMinutes();
-        _inputYearValue = this.toPrecisionAsStep(_inputYearValue);
-        _inputMonthValue = this.toPrecisionAsStep(_inputMonthValue);
-        _inputDayValue = this.toPrecisionAsStep(_inputDayValue);
-        _inputHourValue = this.toPrecisionAsStep(_inputHourValue);
-        _inputMinuteValue = this.toPrecisionAsStep(_inputMinuteValue);
+        var maxDateArray = this.getMaxDate(maxDate);
+        var minDateArray = this.getMinDate(minDate);
+        var _inputYearValue = this.toPrecisionAsStep(_value.getFullYear());
+        var _inputMonthValue = this.toPrecisionAsStep(_value.getMonth());
+        var _inputDayValue = this.toPrecisionAsStep(_value.getDate());
+        var _inputHourValue = this.toPrecisionAsStep(_value.getHours());
+        var _inputMinuteValue = this.toPrecisionAsStep(_value.getMinutes());
         return {
             inputYearValue: _inputYearValue,
             inputMonthValue: _inputMonthValue,
@@ -9827,37 +9778,88 @@ exports.default = {
             hourFocused: undefined,
             minuteFocused: undefined,
             currentFocuse: 1, //remember the latest focuse component in [input_year, input_month, input_day, input_hour, input_minute]
-            value: value,
-            maxYear: maxYear,
-            minYear: minYear,
-            maxMonth: maxMonth,
-            minMonth: minMonth,
-            maxDay: maxDay, //the max date should judge by the year
-            minDay: minDay,
-            maxHour: maxHour,
-            minHour: minHour,
-            maxMinute: maxMinute,
-            minMinute: minMinute
+            value: _value,
+            maxYear: maxDateArray[0],
+            minYear: minDateArray[0],
+            maxMonth: maxDateArray[1],
+            minMonth: minDateArray[1],
+            maxDay: maxDateArray[2], //the max date should judge by the year
+            minDay: minDateArray[2],
+            maxHour: maxDateArray[3],
+            minHour: minDateArray[3],
+            maxMinute: maxDateArray[4],
+            minMinute: minDateArray[4]
         };
     },
     componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
-        var value = void 0;
-        if ('value' in nextProps) {
-            value = new Date(props.value);
+        var _value = void 0;
+        var value = nextProps.value,
+            defaultValue = nextProps.defaultValue,
+            maxDate = nextProps.maxDate,
+            minDate = nextProps.minDate;
+
+        if (value) {
+            _value = new Date(value);
         } else {
-            value = new Date(props.defaultValue);
+            _value = new Date(defaultValue);
         }
-        var _inputYearValue = value.getFullYear();
-        var _inputMonthValue = value.getMonth();
-        var _inputDayValue = value.getDate();
-        var _inputHourValue = value.getHours();
-        var _inputMinuteValue = value.getMinutes();
+        var maxDateArray = this.getMaxDate(maxDate);
+        var minDateArray = this.getMinDate(minDate);
+        var _inputYearValue = _value.getFullYear();
+        var _inputMonthValue = _value.getMonth();
+        var _inputDayValue = _value.getDate();
+        var _inputHourValue = _value.getHours();
+        var _inputMinuteValue = _value.getMinutes();
         _inputYearValue = this.toPrecisionAsStep(_inputYearValue);
         _inputMonthValue = this.toPrecisionAsStep(_inputMonthValue);
         _inputDayValue = this.toPrecisionAsStep(_inputDayValue);
         _inputHourValue = this.toPrecisionAsStep(_inputHourValue);
         _inputMinuteValue = this.toPrecisionAsStep(_inputMinuteValue);
         this.onChange(_inputYearValue, _inputMonthValue, _inputDayValue, _inputHourValue, _inputMinuteValue);
+        this.setState({
+            maxYear: maxDateArray[0],
+            minYear: minDateArray[0],
+            maxMonth: maxDateArray[1],
+            minMonth: minDateArray[1],
+            maxDay: maxDateArray[2], //the max date should judge by the year
+            minDay: minDateArray[2],
+            maxHour: maxDateArray[3],
+            minHour: minDateArray[3],
+            maxMinute: maxDateArray[4],
+            minMinute: minDateArray[4]
+        });
+    },
+    getMaxDate: function getMaxDate(maxDate) {
+        var year = 9999,
+            month = 12,
+            day = 31,
+            hour = 23,
+            minute = 59;
+        if (maxDate) {
+            var _maxDate = new Date(maxDate);
+            year = _maxDate.getFullYear();
+            month = _maxDate.getMonth();
+            day = _maxDate.getDate();
+            hour = _maxDate.getHours();
+            minute = _maxDate.getMinutes();
+        }
+        return [year, month, day, hour, minute];
+    },
+    getMinDate: function getMinDate(minDate) {
+        var year = 0,
+            month = 0,
+            day = 0,
+            hour = 0,
+            minute = 0;
+        if (minDate) {
+            var _minDate = new Date(minDate);
+            year = _minDate.getFullYear();
+            month = _minDate.getMonth();
+            day = _minDate.getDate();
+            hour = _minDate.getHours();
+            minute = _minDate.getMinutes();
+        }
+        return [year, month, day, hour, minute];
     },
     onChange: function onChange() {
         var v1 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.state.inputYearValue;
@@ -9866,7 +9868,7 @@ exports.default = {
         var v4 = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : this.state.inputHourValue;
         var v5 = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : this.state.inputMinuteValue;
 
-        var value = new Date(parseInt(v1), parseInt(v2) - 1, parseInt(v3), parseInt(v4), parseInt(v5));
+        var value = new Date(parseInt(v1), parseInt(v2) - 1, parseInt(v3), parseInt(v4), parseInt(v5), 0);
         this.setState({
             inputYearValue: v1,
             inputMonthValue: v2,
@@ -9895,8 +9897,13 @@ exports.default = {
     onChangeDay: function onChangeDay(e) {
         var _state3 = this.state,
             maxDay = _state3.maxDay,
-            minDay = _state3.minDay;
+            minDay = _state3.minDay,
+            inputYearValue = _state3.inputYearValue,
+            inputMonthValue = _state3.inputMonthValue;
 
+        if (inputYearValue && inputMonthValue) {
+            maxDay = new Date(inputYearValue, inputMonthValue, 0).getDate();
+        }
         var date = this.getValueFromEvent(e).trim();
         this.onChange(undefined, undefined, this.validateValue(date, minDay, maxDay));
     },
@@ -9917,37 +9924,37 @@ exports.default = {
         this.onChange(undefined, undefined, undefined, undefined, this.validateValue(minute, minMinute, maxMinute));
     },
     onYearFocus: function onYearFocus() {
-        var _props;
-
-        this.setFocus(true);
-        (_props = this.props).onFocus.apply(_props, arguments); //execute user's function
-    },
-    onMonthFocus: function onMonthFocus() {
         var _props2;
 
-        this.setFocus(false, true);
-        (_props2 = this.props).onFocus.apply(_props2, arguments);
+        this.setFocus(true);
+        (_props2 = this.props).onFocus.apply(_props2, arguments); //execute user's function
     },
-    onDayFocus: function onDayFocus() {
+    onMonthFocus: function onMonthFocus() {
         var _props3;
 
-        this.setFocus(false, false, true);
+        this.setFocus(false, true);
         (_props3 = this.props).onFocus.apply(_props3, arguments);
     },
-    onHourFocus: function onHourFocus() {
+    onDayFocus: function onDayFocus() {
         var _props4;
 
-        this.setFocus(false, false, false, true);
+        this.setFocus(false, false, true);
         (_props4 = this.props).onFocus.apply(_props4, arguments);
     },
-    onMinuteFocus: function onMinuteFocus() {
+    onHourFocus: function onHourFocus() {
         var _props5;
 
-        this.setFocus(false, false, false, false, true);
+        this.setFocus(false, false, false, true);
         (_props5 = this.props).onFocus.apply(_props5, arguments);
     },
-    onBlur: function onBlur(e) {
+    onMinuteFocus: function onMinuteFocus() {
         var _props6;
+
+        this.setFocus(false, false, false, false, true);
+        (_props6 = this.props).onFocus.apply(_props6, arguments);
+    },
+    onBlur: function onBlur(e) {
+        var _props7;
 
         var _state6 = this.state,
             yearFocused = _state6.yearFocused,
@@ -9985,7 +9992,7 @@ exports.default = {
             args[_key - 1] = arguments[_key];
         }
 
-        (_props6 = this.props).onBlur.apply(_props6, [e].concat(args));
+        (_props7 = this.props).onBlur.apply(_props7, [e].concat(args));
     },
     getCurrentValidValue: function getCurrentValidValue(value) {
         var val = value;
@@ -10018,6 +10025,8 @@ exports.default = {
     },
     setValue: function setValue(v1, v2, v3, v4, v5) {
         var _state7 = this.state,
+            inputYearValue = _state7.inputYearValue,
+            inputMonthValue = _state7.inputMonthValue,
             maxYear = _state7.maxYear,
             minYear = _state7.minYear,
             maxMonth = _state7.maxMonth,
@@ -10029,6 +10038,9 @@ exports.default = {
             minMinute = _state7.minMinute,
             maxMinute = _state7.maxMinute;
 
+        if (inputYearValue && inputMonthValue) {
+            maxDay = new Date(inputYearValue, inputMonthValue, 0).getDate();
+        }
         this.onChange(this.validateValue(v1, minYear, maxYear), this.validateValue(v2, minMonth, maxMonth), this.validateValue(v3, minDay, maxDay), this.validateValue(v4, minHour, maxHour), this.validateValue(v5, minMinute, maxMinute));
     },
     setFocus: function setFocus() {
@@ -10083,9 +10095,9 @@ exports.default = {
         return Number(Number(num).toFixed(Math.abs(precision)));
     },
     upStep: function upStep(val) {
-        var _props7 = this.props,
-            step = _props7.step,
-            min = _props7.min;
+        var _props8 = this.props,
+            step = _props8.step,
+            min = _props8.min;
 
         var precisionFactor = this.getPrecisionFactor();
         var result = void 0;
@@ -10097,9 +10109,9 @@ exports.default = {
         return this.toPrecisionAsStep(result);
     },
     downStep: function downStep(val) {
-        var _props8 = this.props,
-            step = _props8.step,
-            min = _props8.min;
+        var _props9 = this.props,
+            step = _props9.step,
+            min = _props9.min;
 
         var precisionFactor = this.getPrecisionFactor();
         var result = void 0;
@@ -10234,7 +10246,7 @@ exports = module.exports = __webpack_require__(85)();
 
 
 // module
-exports.push([module.i, ".best-input-number {\n  margin: 0;\n  display: inline-block;\n  vertical-align: middle;\n  border: 1px solid #ccc;\n  width: 100%;\n  padding: 0;\n  height: 30px;\n  font-size: 13px;\n  line-height: 1.42857143;\n  border-radius: 2px;\n  transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;\n}\n.best-input-number:hover {\n  border-color: #66afe9;\n}\n.best-input-number:hover .best-input-number-handler-up,\n.best-input-number:hover .best-input-number-handler-wrap {\n  border-color: #66afe9;\n}\n.best-input-number .best-input-number-input-wrap {\n  overflow: hidden;\n  height: 28px;\n}\n.best-input-number .best-input-number-input-wrap .best-input-number-input {\n  padding: 2px 2px;\n  margin-left: 2px;\n  width: 16%;\n  outline: 0;\n  -moz-appearance: textfield;\n  line-height: 28px;\n  height: 28px;\n  transition: all 0.3s ease;\n  color: #666666;\n  border: 0;\n  border-radius: 1px;\n}\n.best-input-number .best-input-number-input-wrap .best-input-number-small {\n  width: 8%;\n  padding: 2px 1px;\n  margin-left: 1px;\n  outline: 0;\n  -moz-appearance: textfield;\n  line-height: 28px;\n  height: 28px;\n  transition: all 0.3s ease;\n  color: #666666;\n  border: 0;\n  border-radius: 1px;\n}\n.best-input-number .best-input-number-input-wrap .best-input-number-time {\n  width: 8%;\n  padding: 2px 2px 2px 5px;\n  margin-right: 3px;\n  outline: 0;\n  -moz-appearance: textfield;\n  line-height: 28px;\n  height: 28px;\n  transition: all 0.3s ease;\n  color: #666666;\n  border: 0;\n  border-radius: 1px;\n}\n.best-input-number .best-input-number-handler-wrap {\n  float: right;\n  border-left: 1px solid #ccc;\n  width: 20px;\n  height: 28px;\n  display: inline-block;\n  font: normal normal normal 14px/1 FontAwesome;\n  font-size: inherit;\n  text-rendering: auto;\n}\n.best-input-number .best-input-number-handler-wrap .best-input-number-handler-up {\n  border-bottom: 1px solid #ccc;\n  text-align: center;\n  line-height: 15px;\n  height: 15px;\n  overflow: hidden;\n  display: block;\n  cursor: pointer;\n}\n.best-input-number .best-input-number-handler-wrap .best-input-number-handler-up:hover {\n  text-decoration: none;\n}\n.best-input-number .best-input-number-handler-wrap .best-input-number-handler-up .best-input-number-handler-up-inner {\n  color: #666666;\n  user-select: none;\n}\n.best-input-number .best-input-number-handler-wrap .best-input-number-handler-up .best-input-number-handler-up-inner:after {\n  content: '\\F077';\n}\n.best-input-number .best-input-number-handler-wrap .best-input-number-handler-up-disabled {\n  opacity: 0.72;\n}\n.best-input-number .best-input-number-handler-wrap .best-input-number-handler-up-disabled:hover {\n  color: #999;\n  border-color: #d9d9d9;\n}\n.best-input-number .best-input-number-handler-wrap .best-input-number-handler-down {\n  text-align: center;\n  line-height: 15px;\n  height: 15px;\n  overflow: hidden;\n  display: block;\n  cursor: pointer;\n}\n.best-input-number .best-input-number-handler-wrap .best-input-number-handler-down:hover {\n  text-decoration: none;\n}\n.best-input-number .best-input-number-handler-wrap .best-input-number-handler-down .best-input-number-handler-down-inner {\n  color: #666666;\n  user-select: none;\n}\n.best-input-number .best-input-number-handler-wrap .best-input-number-handler-down .best-input-number-handler-down-inner:after {\n  content: '\\F078';\n}\n.best-input-number .best-input-number-handler-wrap .best-input-number-handler-down-disabled {\n  opacity: 0.72;\n}\n.best-input-number .best-input-number-handler-wrap .best-input-number-handler-down-disabled:hover {\n  color: #999;\n  border-color: #d9d9d9;\n}\n.best-input-number-sm {\n  line-height: 1.5;\n  height: 28px;\n  font-size: 12px;\n  border-radius: 1px;\n}\n.best-input-number-sm .best-input-number-input-wrap {\n  height: 28px;\n}\n.best-input-number-sm .best-input-number-input-wrap .best-input-number-input {\n  line-height: 28px;\n  height: 28px;\n  padding: 5px 10px;\n}\n.best-input-number-sm .best-input-number-handler-wrap {\n  height: 28px;\n}\n.best-input-number-sm .best-input-number-handler-wrap .best-input-number-handler-up {\n  line-height: 14px;\n  height: 14px;\n}\n.best-input-number-sm .best-input-number-handler-wrap .best-input-number-handler-down {\n  line-height: 14px;\n  height: 14px;\n}\n.best-input-number-lg {\n  line-height: 1.3333333;\n  height: 45px;\n  font-size: 17px;\n  border-radius: 3px;\n}\n.best-input-number-lg .best-input-number-input-wrap {\n  height: 43px;\n}\n.best-input-number-lg .best-input-number-input-wrap .best-input-number-input {\n  line-height: 43px;\n  height: 43px;\n  padding: 10px 16px;\n}\n.best-input-number-lg .best-input-number-handler-wrap {\n  height: 43px;\n}\n.best-input-number-lg .best-input-number-handler-wrap .best-input-number-handler-up {\n  line-height: 21px;\n  height: 21px;\n}\n.best-input-number-lg .best-input-number-handler-wrap .best-input-number-handler-down {\n  line-height: 22px;\n  height: 22px;\n}\n.best-input-number-disabled:hover {\n  border-color: #d9d9d9;\n}\n.best-input-number-disabled:hover .best-input-number-handler-up,\n.best-input-number-disabled:hover .best-input-number-handler-wrap {\n  border-color: #d9d9d9;\n}\n.best-input-number-disabled .best-input-number-input {\n  opacity: 0.72;\n  cursor: not-allowed;\n  background-color: #f3f3f3;\n}\n.best-input-number-disabled .best-input-number-handler {\n  opacity: 0.72;\n}\n.best-input-number-disabled .best-input-number-handler:hover {\n  color: #999;\n  border-color: #d9d9d9;\n}\n", ""]);
+exports.push([module.i, ".best-input-number {\n  margin: 0;\n  display: inline-block;\n  vertical-align: middle;\n  border: 1px solid #ccc;\n  width: 100%;\n  padding: 0;\n  height: 30px;\n  font-size: 13px;\n  line-height: 1.42857143;\n  border-radius: 2px;\n  transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;\n}\n.best-input-number:hover {\n  border-color: #66afe9;\n}\n.best-input-number:hover .best-input-number-handler-up,\n.best-input-number:hover .best-input-number-handler-wrap {\n  border-color: #66afe9;\n}\n.best-input-number .best-input-number-input-wrap {\n  overflow: hidden;\n  height: 28px;\n}\n.best-input-number .best-input-number-input-wrap .best-input-number-input {\n  padding: 2px 1px 2px 2px;\n  margin-left: 2px;\n  width: 30%;\n  outline: 0;\n  -moz-appearance: textfield;\n  line-height: 28px;\n  height: 28px;\n  transition: all 0.3s ease;\n  color: #666666;\n  border: 0;\n  border-radius: 1px;\n  text-align: right;\n}\n.best-input-number .best-input-number-input-wrap .best-input-number-small {\n  width: 11%;\n  padding: 2px 1px 2px 0px;\n  margin-left: 0px;\n  margin-right: 0px;\n  outline: 0;\n  -moz-appearance: textfield;\n  line-height: 28px;\n  height: 28px;\n  transition: all 0.3s ease;\n  color: #666666;\n  border: 0;\n  border-radius: 1px;\n  text-align: right;\n}\n.best-input-number .best-input-number-input-wrap .best-input-number-hour {\n  width: 12%;\n  padding: 2px 1px 2px 2px;\n  margin-right: 0px;\n  margin-left: 2px;\n  outline: 0;\n  -moz-appearance: textfield;\n  line-height: 28px;\n  height: 28px;\n  transition: all 0.3s ease;\n  color: #666666;\n  border: 0;\n  border-radius: 1px;\n  text-align: right;\n}\n.best-input-number .best-input-number-input-wrap .best-input-number-minute {\n  width: 12%;\n  padding: 2px 1px 2px 0px;\n  margin-right: 0px;\n  margin-left: 0px;\n  outline: 0;\n  -moz-appearance: textfield;\n  line-height: 28px;\n  height: 28px;\n  transition: all 0.3s ease;\n  color: #666666;\n  border: 0;\n  border-radius: 1px;\n  text-align: left;\n}\n.best-input-number .best-input-number-handler-wrap {\n  float: right;\n  border-left: 1px solid #ccc;\n  width: 20px;\n  height: 28px;\n  display: inline-block;\n  font: normal normal normal 14px/1 FontAwesome;\n  font-size: inherit;\n  text-rendering: auto;\n}\n.best-input-number .best-input-number-handler-wrap .best-input-number-handler-up {\n  border-bottom: 1px solid #ccc;\n  text-align: center;\n  line-height: 15px;\n  height: 15px;\n  overflow: hidden;\n  display: block;\n  cursor: pointer;\n}\n.best-input-number .best-input-number-handler-wrap .best-input-number-handler-up:hover {\n  text-decoration: none;\n}\n.best-input-number .best-input-number-handler-wrap .best-input-number-handler-up .best-input-number-handler-up-inner {\n  color: #666666;\n  user-select: none;\n}\n.best-input-number .best-input-number-handler-wrap .best-input-number-handler-up .best-input-number-handler-up-inner:after {\n  content: '\\F077';\n}\n.best-input-number .best-input-number-handler-wrap .best-input-number-handler-up-disabled {\n  opacity: 0.72;\n}\n.best-input-number .best-input-number-handler-wrap .best-input-number-handler-up-disabled:hover {\n  color: #999;\n  border-color: #d9d9d9;\n}\n.best-input-number .best-input-number-handler-wrap .best-input-number-handler-down {\n  text-align: center;\n  line-height: 15px;\n  height: 15px;\n  overflow: hidden;\n  display: block;\n  cursor: pointer;\n}\n.best-input-number .best-input-number-handler-wrap .best-input-number-handler-down:hover {\n  text-decoration: none;\n}\n.best-input-number .best-input-number-handler-wrap .best-input-number-handler-down .best-input-number-handler-down-inner {\n  color: #666666;\n  user-select: none;\n}\n.best-input-number .best-input-number-handler-wrap .best-input-number-handler-down .best-input-number-handler-down-inner:after {\n  content: '\\F078';\n}\n.best-input-number .best-input-number-handler-wrap .best-input-number-handler-down-disabled {\n  opacity: 0.72;\n}\n.best-input-number .best-input-number-handler-wrap .best-input-number-handler-down-disabled:hover {\n  color: #999;\n  border-color: #d9d9d9;\n}\n.best-input-number-sm {\n  line-height: 1.5;\n  height: 28px;\n  font-size: 12px;\n  border-radius: 1px;\n}\n.best-input-number-sm .best-input-number-input-wrap {\n  height: 28px;\n}\n.best-input-number-sm .best-input-number-input-wrap .best-input-number-input {\n  line-height: 28px;\n  height: 28px;\n  padding: 5px 10px;\n}\n.best-input-number-sm .best-input-number-handler-wrap {\n  height: 28px;\n}\n.best-input-number-sm .best-input-number-handler-wrap .best-input-number-handler-up {\n  line-height: 14px;\n  height: 14px;\n}\n.best-input-number-sm .best-input-number-handler-wrap .best-input-number-handler-down {\n  line-height: 14px;\n  height: 14px;\n}\n.best-input-number-lg {\n  line-height: 1.3333333;\n  height: 45px;\n  font-size: 17px;\n  border-radius: 3px;\n}\n.best-input-number-lg .best-input-number-input-wrap {\n  height: 43px;\n}\n.best-input-number-lg .best-input-number-input-wrap .best-input-number-input {\n  line-height: 43px;\n  height: 43px;\n  padding: 10px 16px;\n}\n.best-input-number-lg .best-input-number-handler-wrap {\n  height: 43px;\n}\n.best-input-number-lg .best-input-number-handler-wrap .best-input-number-handler-up {\n  line-height: 21px;\n  height: 21px;\n}\n.best-input-number-lg .best-input-number-handler-wrap .best-input-number-handler-down {\n  line-height: 22px;\n  height: 22px;\n}\n.best-input-number-disabled:hover {\n  border-color: #d9d9d9;\n}\n.best-input-number-disabled:hover .best-input-number-handler-up,\n.best-input-number-disabled:hover .best-input-number-handler-wrap {\n  border-color: #d9d9d9;\n}\n.best-input-number-disabled .best-input-number-input {\n  opacity: 0.72;\n  cursor: not-allowed;\n  background-color: #f3f3f3;\n}\n.best-input-number-disabled .best-input-number-handler {\n  opacity: 0.72;\n}\n.best-input-number-disabled .best-input-number-handler:hover {\n  color: #999;\n  border-color: #d9d9d9;\n}\n.best-input-number {\n  margin: 0;\n  display: inline-block;\n  vertical-align: middle;\n  border: 1px solid #ccc;\n  width: 100%;\n  padding: 0;\n  height: 30px;\n  font-size: 13px;\n  line-height: 1.42857143;\n  border-radius: 2px;\n  transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;\n}\n.best-input-number:hover {\n  border-color: #66afe9;\n}\n.best-input-number:hover .best-input-number-handler-up,\n.best-input-number:hover .best-input-number-handler-wrap {\n  border-color: #66afe9;\n}\n.best-input-number .best-input-number-input-wrap {\n  overflow: hidden;\n  height: 28px;\n}\n.best-input-number .best-input-number-input-wrap .best-input-number-input {\n  padding: 2px 1px 2px 2px;\n  margin-left: 2px;\n  width: 30%;\n  outline: 0;\n  -moz-appearance: textfield;\n  line-height: 28px;\n  height: 28px;\n  transition: all 0.3s ease;\n  color: #666666;\n  border: 0;\n  border-radius: 1px;\n  text-align: right;\n}\n.best-input-number .best-input-number-input-wrap .best-input-number-small {\n  width: 11%;\n  padding: 2px 1px 2px 0px;\n  margin-left: 0px;\n  margin-right: 0px;\n  outline: 0;\n  -moz-appearance: textfield;\n  line-height: 28px;\n  height: 28px;\n  transition: all 0.3s ease;\n  color: #666666;\n  border: 0;\n  border-radius: 1px;\n  text-align: right;\n}\n.best-input-number .best-input-number-input-wrap .best-input-number-hour {\n  width: 12%;\n  padding: 2px 1px 2px 2px;\n  margin-right: 0px;\n  margin-left: 2px;\n  outline: 0;\n  -moz-appearance: textfield;\n  line-height: 28px;\n  height: 28px;\n  transition: all 0.3s ease;\n  color: #666666;\n  border: 0;\n  border-radius: 1px;\n  text-align: right;\n}\n.best-input-number .best-input-number-input-wrap .best-input-number-minute {\n  width: 12%;\n  padding: 2px 1px 2px 0px;\n  margin-right: 0px;\n  margin-left: 0px;\n  outline: 0;\n  -moz-appearance: textfield;\n  line-height: 28px;\n  height: 28px;\n  transition: all 0.3s ease;\n  color: #666666;\n  border: 0;\n  border-radius: 1px;\n  text-align: left;\n}\n.best-input-number .best-input-number-handler-wrap {\n  float: right;\n  border-left: 1px solid #ccc;\n  width: 20px;\n  height: 28px;\n  display: inline-block;\n  font: normal normal normal 14px/1 FontAwesome;\n  font-size: inherit;\n  text-rendering: auto;\n}\n.best-input-number .best-input-number-handler-wrap .best-input-number-handler-up {\n  border-bottom: 1px solid #ccc;\n  text-align: center;\n  line-height: 15px;\n  height: 15px;\n  overflow: hidden;\n  display: block;\n  cursor: pointer;\n}\n.best-input-number .best-input-number-handler-wrap .best-input-number-handler-up:hover {\n  text-decoration: none;\n}\n.best-input-number .best-input-number-handler-wrap .best-input-number-handler-up .best-input-number-handler-up-inner {\n  color: #666666;\n  user-select: none;\n}\n.best-input-number .best-input-number-handler-wrap .best-input-number-handler-up .best-input-number-handler-up-inner:after {\n  content: '\\F077';\n}\n.best-input-number .best-input-number-handler-wrap .best-input-number-handler-up-disabled {\n  opacity: 0.72;\n}\n.best-input-number .best-input-number-handler-wrap .best-input-number-handler-up-disabled:hover {\n  color: #999;\n  border-color: #d9d9d9;\n}\n.best-input-number .best-input-number-handler-wrap .best-input-number-handler-down {\n  text-align: center;\n  line-height: 15px;\n  height: 15px;\n  overflow: hidden;\n  display: block;\n  cursor: pointer;\n}\n.best-input-number .best-input-number-handler-wrap .best-input-number-handler-down:hover {\n  text-decoration: none;\n}\n.best-input-number .best-input-number-handler-wrap .best-input-number-handler-down .best-input-number-handler-down-inner {\n  color: #666666;\n  user-select: none;\n}\n.best-input-number .best-input-number-handler-wrap .best-input-number-handler-down .best-input-number-handler-down-inner:after {\n  content: '\\F078';\n}\n.best-input-number .best-input-number-handler-wrap .best-input-number-handler-down-disabled {\n  opacity: 0.72;\n}\n.best-input-number .best-input-number-handler-wrap .best-input-number-handler-down-disabled:hover {\n  color: #999;\n  border-color: #d9d9d9;\n}\n.best-input-number-sm {\n  line-height: 1.5;\n  height: 28px;\n  font-size: 12px;\n  border-radius: 1px;\n}\n.best-input-number-sm .best-input-number-input-wrap {\n  height: 28px;\n}\n.best-input-number-sm .best-input-number-input-wrap .best-input-number-input {\n  line-height: 28px;\n  height: 28px;\n  padding: 5px 10px;\n}\n.best-input-number-sm .best-input-number-handler-wrap {\n  height: 28px;\n}\n.best-input-number-sm .best-input-number-handler-wrap .best-input-number-handler-up {\n  line-height: 14px;\n  height: 14px;\n}\n.best-input-number-sm .best-input-number-handler-wrap .best-input-number-handler-down {\n  line-height: 14px;\n  height: 14px;\n}\n.best-input-number-lg {\n  line-height: 1.3333333;\n  height: 45px;\n  font-size: 17px;\n  border-radius: 3px;\n}\n.best-input-number-lg .best-input-number-input-wrap {\n  height: 43px;\n}\n.best-input-number-lg .best-input-number-input-wrap .best-input-number-input {\n  line-height: 43px;\n  height: 43px;\n  padding: 10px 16px;\n}\n.best-input-number-lg .best-input-number-handler-wrap {\n  height: 43px;\n}\n.best-input-number-lg .best-input-number-handler-wrap .best-input-number-handler-up {\n  line-height: 21px;\n  height: 21px;\n}\n.best-input-number-lg .best-input-number-handler-wrap .best-input-number-handler-down {\n  line-height: 22px;\n  height: 22px;\n}\n.best-input-number-disabled:hover {\n  border-color: #d9d9d9;\n}\n.best-input-number-disabled:hover .best-input-number-handler-up,\n.best-input-number-disabled:hover .best-input-number-handler-wrap {\n  border-color: #d9d9d9;\n}\n.best-input-number-disabled .best-input-number-input {\n  opacity: 0.72;\n  cursor: not-allowed;\n  background-color: #f3f3f3;\n}\n.best-input-number-disabled .best-input-number-handler {\n  opacity: 0.72;\n}\n.best-input-number-disabled .best-input-number-handler:hover {\n  color: #999;\n  border-color: #d9d9d9;\n}\n", ""]);
 
 // exports
 
@@ -22830,7 +22842,7 @@ var Component = _react2.default.createClass({
         return _react2.default.createElement(
             'div',
             { style: { width: '200px' } },
-            _react2.default.createElement(_InputDate2.default, { maxDate: new Date().getTime() })
+            _react2.default.createElement(_InputDate2.default, null)
         );
     }
 });
