@@ -238,7 +238,7 @@ export default {
         return parseInt(value);
     },
     setValue(v1, v2, v3, v4, v5) {
-        const { inputYearValue, inputMonthValue, maxYear, minYear, maxMonth, minMonth, maxDay, minDay, maxHour, minHour, minMinute, maxMinute } = this.state;
+        let { inputYearValue, inputMonthValue, maxYear, minYear, maxMonth, minMonth, maxDay, minDay, maxHour, minHour, minMinute, maxMinute } = this.state;
         if (inputYearValue && inputMonthValue) {
             maxDay = new Date(inputYearValue, inputMonthValue, 0).getDate();
         }
