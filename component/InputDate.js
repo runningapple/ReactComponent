@@ -25,11 +25,15 @@ const InputDate = React.createClass({
         minMonth: PropTypes.number, 
         maxDay: PropTypes.number,
         minDay: PropTypes.number,
+        maxHour: PropTypes.number,
+        minHour: PropTypes.number,
+        maxMinute: PropTypes.number,
+        minMinute: PropTypes.number,
         size: PropTypes.oneOf(['lg', 'sm']),
         step: PropTypes.oneOfType([
             PropTypes.number,
             PropTypes.string
-        ])
+            ])
     },
     contextTypes: {
         size: PropTypes.oneOf(['lg', 'sm'])
@@ -59,20 +63,17 @@ const InputDate = React.createClass({
     getValueFromEvent(e) {
         return e.target.value;
     },
-    leadingZeroHnadler(value, info) {
+    leadingZeroHnadler(value, info = 'others') {
         let result = '';
         switch (info) {
             case 'year':
-                if (value == 0) return '0000';
-                break;
-            case 'month':
-                if (value == 0) return '00';
-                break;
-            case 'date':
-                if (value == 0) return '00';
-                break;
+            if (value == 0) return '0000';
+            break;
+            case 'others':
+            if (value == 0) return '00';        
+            break;
             default:
-                console.log('leading zero error!!!');
+            console.log('leading zero error!!!');
         }
         return value.toString();
     },
@@ -96,9 +97,10 @@ const InputDate = React.createClass({
         // const editable = !props.readOnly && !props.disabled;
 
         let inputYearValue = this.leadingZeroHnadler(this.state.inputYearValue, 'year');
-        let inputMonthValue = this.leadingZeroHnadler(this.state.inputMonthValue, 'month');
-        let inputDayValue = this.leadingZeroHnadler(this.state.inputDayValue, 'date');
-
+        let inputMonthValue = this.leadingZeroHnadler(this.state.inputMonthValue);
+        let inputDayValue = this.leadingZeroHnadler(this.state.inputDayValue);
+        let inputHourValue = this.leadingZeroHnadler(this.state.inputHourValue);
+        let inputMinuteValue = this.leadingZeroHnadler(this.state.inputMinuteValue);
         // Remove React warning.
         // Warning: Input elements must be either controlled
         // or uncontrolled (specify either the value prop, or
@@ -107,12 +109,17 @@ const InputDate = React.createClass({
         // https://fb.me/react-unknown-prop
         delete props.prefixCls;
         // ref for test
-        delete props.maxYear;
+        delete props.maxYear; 
         delete props.minYear;
         delete props.maxMonth;
         delete props.minMonth;
         delete props.maxDay;
         delete props.minDay;
+        delete props.maxHour;
+        delete props.minHour;
+        delete props.maxMinute;
+        delete props.minMinute;
+
         return ( < div className = { classes }
             style = { props.style } >
             < div className = { `${prefixCls}-handler-wrap` } >
@@ -165,7 +172,8 @@ const InputDate = React.createClass({
             onChange = { this.onChangeMonth }
             value = { inputMonthValue }
             />
-            月 < input {...props }
+            月 
+            < input {...props }
             ref = "input_day"
             style = { null }
             className = { `${prefixCls}-small` }
@@ -179,8 +187,40 @@ const InputDate = React.createClass({
             onChange = { this.onChangeDay }
             value = { inputDayValue }
             />
-            日 < /div> < /div >
-        );
+            日
+            < input {...props }
+            ref = "input_hour"
+            style = { null }
+            className = { `${prefixCls}-small` }
+            autoComplete = "off"
+            onFocus = { this.onHourFocus }
+            onBlur = { this.onBlur }
+            onKeyDown = { this.onKeyDown }
+            readOnly = { props.readOnly }
+            disabled = { props.disabled }
+            name = { props.name }
+            onChange = { this.onChangeHour }
+            value = { inputHourValue }
+            />
+            时
+            < input {...props }
+            ref = "input_minute"
+            style = { null }
+            className = { `${prefixCls}-small` }
+            autoComplete = "off"
+            onFocus = { this.onMinuteFocus }
+            onBlur = { this.onBlur }
+            onKeyDown = { this.onKeyDown }
+            readOnly = { props.readOnly }
+            disabled = { props.disabled }
+            name = { props.name }
+            onChange = { this.onChangeMinute }
+            value = { inputMinuteValue }
+            />
+            分
+            </div> 
+            </div >
+            );
     }
 });
 

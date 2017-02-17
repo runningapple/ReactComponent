@@ -22,6 +22,10 @@ export default {
                 minMonth: 0,
                 maxDay: 31, //the max date should judge by the year
                 minDay: 0,
+                maxHour: 12,
+                minHour: 0,
+                maxMinute: 59,
+                minMinute: 0,
                 step: 1,
                 style: {},
                 defaultValue: new Date().getTime(),
@@ -45,13 +49,19 @@ export default {
             _inputYearValue = this.toPrecisionAsStep(_inputYearValue);
             _inputMonthValue = this.toPrecisionAsStep(_inputMonthValue);
             _inputDayValue = this.toPrecisionAsStep(_inputDayValue);
+            _inputHourValue = this.toPrecisionAsStep(_inputHourValue);
+            _inputMinuteValue = this.toPrecisionAsStep(_inputMinuteValue);
             return {
                 inputYearValue: _inputYearValue,
                 inputMonthValue: _inputMonthValue,
                 inputDayValue: _inputDayValue,
+                inputHourValue: _inputHourValue,
+                inputMinuteValue: _inputMinuteValue,
                 yearFocused: true,
                 monthFocused: undefined,
                 dayFocused: undefined,
+                hourFocused: undefined,
+                minuteFocused: undefined,
                 currentFocuse: 1,   //remember the latest focuse component in [input_year, input_month, input_day]
                 value
             };
@@ -66,10 +76,14 @@ export default {
             let _inputYearValue = value.getFullYear();
             let _inputMonthValue = value.getMonth();
             let _inputDayValue = value.getDate();
+            let _inputHourValue = value.getHours();
+            let _inputMinuteValue = value.getMinutes();
             _inputYearValue = this.toPrecisionAsStep(_inputYearValue);
             _inputMonthValue = this.toPrecisionAsStep(_inputMonthValue);
             _inputDayValue = this.toPrecisionAsStep(_inputDayValue);
-            this.onChange(_inputYearValue, _inputMonthValue, _inputDayValue);
+            _inputHourValue = this.toPrecisionAsStep(_inputHourValue);
+            _inputMinuteValue = this.toPrecisionAsStep(_inputMinuteValue);
+            this.onChange(_inputYearValue, _inputMonthValue, _inputDayValue, _inputHourValue, _inputMinuteValue);
         },
         onChange(v1 = this.state.inputYearValue, v2 = this.state.inputMonthValue, v3 = this.state.inputDayValue) {
             let value = new Date(parseInt(v1), parseInt(v2) - 1, parseInt(v3));
@@ -77,6 +91,8 @@ export default {
                 inputYearValue: v1,
                 inputMonthValue: v2,
                 inputDayValue: v3,
+                inputHourValue: v4,
+                inputMinuteValue: v5,
                 value
             });
         },
