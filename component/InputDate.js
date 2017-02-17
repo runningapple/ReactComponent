@@ -67,13 +67,14 @@ const InputDate = React.createClass({
         let result = '';
         switch (info) {
             case 'year':
-            if (value == 0) return '0000';
-            break;
+                if (value == 0) return '0000';
+                break;
             case 'others':
-            if (value == 0) return '00';        
-            break;
+                if (value == 0) return '00';
+                if (value < 10) return '0' + value; 
+                break;
             default:
-            console.log('leading zero error!!!');
+                console.log('leading zero error!!!');
         }
         return value.toString();
     },
@@ -191,7 +192,7 @@ const InputDate = React.createClass({
             < input {...props }
             ref = "input_hour"
             style = { null }
-            className = { `${prefixCls}-small` }
+            className = { `${prefixCls}-time` }
             autoComplete = "off"
             onFocus = { this.onHourFocus }
             onBlur = { this.onBlur }
@@ -202,11 +203,11 @@ const InputDate = React.createClass({
             onChange = { this.onChangeHour }
             value = { inputHourValue }
             />
-            时
+            :
             < input {...props }
             ref = "input_minute"
             style = { null }
-            className = { `${prefixCls}-small` }
+            className = { `${prefixCls}-time` }
             autoComplete = "off"
             onFocus = { this.onMinuteFocus }
             onBlur = { this.onBlur }
@@ -217,9 +218,8 @@ const InputDate = React.createClass({
             onChange = { this.onChangeMinute }
             value = { inputMinuteValue }
             />
-            分
             </div> 
-            </div >
+            </div>
             );
     }
 });

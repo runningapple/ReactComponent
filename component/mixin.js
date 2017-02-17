@@ -22,7 +22,7 @@ export default {
                 minMonth: 0,
                 maxDay: 31, //the max date should judge by the year
                 minDay: 0,
-                maxHour: 12,
+                maxHour: 24,
                 minHour: 0,
                 maxMinute: 59,
                 minMinute: 0,
@@ -46,6 +46,8 @@ export default {
             let _inputYearValue = value.getFullYear();
             let _inputMonthValue = value.getMonth();
             let _inputDayValue = value.getDate();
+            let _inputHourValue = value.getHours();
+            let _inputMinuteValue = value.getMinutes();
             _inputYearValue = this.toPrecisionAsStep(_inputYearValue);
             _inputMonthValue = this.toPrecisionAsStep(_inputMonthValue);
             _inputDayValue = this.toPrecisionAsStep(_inputDayValue);
@@ -62,7 +64,7 @@ export default {
                 dayFocused: undefined,
                 hourFocused: undefined,
                 minuteFocused: undefined,
-                currentFocuse: 1,   //remember the latest focuse component in [input_year, input_month, input_day]
+                currentFocuse: 1, //remember the latest focuse component in [input_year, input_month, input_day, input_hour, input_minute]
                 value
             };
         },
@@ -85,8 +87,8 @@ export default {
             _inputMinuteValue = this.toPrecisionAsStep(_inputMinuteValue);
             this.onChange(_inputYearValue, _inputMonthValue, _inputDayValue, _inputHourValue, _inputMinuteValue);
         },
-        onChange(v1 = this.state.inputYearValue, v2 = this.state.inputMonthValue, v3 = this.state.inputDayValue) {
-            let value = new Date(parseInt(v1), parseInt(v2) - 1, parseInt(v3));
+        onChange(v1 = this.state.inputYearValue, v2 = this.state.inputMonthValue, v3 = this.state.inputDayValue, v4 = this.state.inputHourValue, v5 = this.state.inputMinuteValue) {
+            let value = new Date(parseInt(v1), parseInt(v2) - 1, parseInt(v3), parseInt(v4), parseInt(v5));
             this.setState({
                 inputYearValue: v1,
                 inputMonthValue: v2,
@@ -111,32 +113,57 @@ export default {
             const date = this.getValueFromEvent(e).trim();
             this.onChange(undefined, undefined, this.validateValue(date, minDay, maxDay));
         },
+        onChangeHour(e) {
+            const { maxHour, minHour } = this.props;
+            const hour = this.getValueFromEvent(e).trim();
+            this.onChange(undefined, undefined, undefined, this.validateValue(hour, minHour, maxHour));
+        },
+        onChangeMinute(e) {
+            const { maxMinute, minMinute } = this.props;
+            const minute = this.getValueFromEvent(e).trim();
+            this.onChange(undefined, undefined, undefined, undefined, this.validateValue(minute, minMinute, maxMinute));
+        },
         onYearFocus(...args) {
-            this.setFocus(true, false, false);
+            this.setFocus(true);
             this.props.onFocus(...args); //execute user's function
         },
         onMonthFocus(...args) {
-            this.setFocus(false, true, false);
+            this.setFocus(false, true);
             this.props.onFocus(...args);
         },
         onDayFocus(...args) {
             this.setFocus(false, false, true);
             this.props.onFocus(...args);
         },
+        onHourFocus(...args) {
+            this.setFocus(false, false, false, true);
+            this.props.onFocus(...args);
+        },
+        onMinuteFocus(...args) {
+            this.setFocus(false, false, false, false, true);
+            this.props.onFocus(...args);
+        },
         onBlur(e, ...args) {
-            const { yearFocused, monthFocused, dayFocused, inputYearValue, inputMonthValue, inputDayValue } = this.state;
+            const { yearFocused, monthFocused, dayFocused, hourFocused, minuteFocused, inputYearValue, inputMonthValue, inputDayValue, inputMinuteValue, inputHourValue } = this.state;
             let _inputYearValue = inputYearValue;
             let _inputMonthValue = inputMonthValue;
             let _inputDayValue = inputDayValue;
+            let _inputHourValue = inputHourValue;
+            let _inputMinuteValue = inputMinuteValue;
+            const currentValue = this.getCurrentValidValue(this.getValueFromEvent(e).trim());
             if (yearFocused) {
-                _inputYearValue = this.getCurrentValidValue(this.getValueFromEvent(e).trim());
+                _inputYearValue = currentValue;
             } else if (monthFocused) {
-                _inputMonthValue = this.getCurrentValidValue(this.getValueFromEvent(e).trim());
-            } else {
-                _inputDayValue = this.getCurrentValidValue(this.getValueFromEvent(e).trim());
+                _inputMonthValue = currentValue;
+            } else if (dayFocused){
+                _inputDayValue = currentValue;
+            } else if (hourFocused) {
+                _inputHourValue = currentValue;
+            } else if (minuteFocused) {
+                _inputMinuteValue = currentValue;
             }
-            this.setFocus(false, false, false);
-            this.setValue(_inputYearValue, _inputMonthValue, _inputDayValue);
+            this.setFocus();
+            this.setValue(_inputYearValue, _inputMonthValue, _inputDayValue, _inputHourValue, _inputMinuteValue);
             this.props.onBlur(e, ...args);
         },
         getCurrentValidValue(value) {
@@ -168,27 +195,35 @@ export default {
             }
             return parseInt(value);
         },
-        setValue(v1, v2, v3) {
-            const { maxYear, minYear, maxMonth, minMonth, maxDay, minDay } = this.props;
+        setValue(v1, v2, v3, v4, v5) {
+            const { maxYear, minYear, maxMonth, minMonth, maxDay, minDay, maxHour, minHour, minMinute, maxMinute } = this.props;
             this.onChange(
                 this.validateValue(v1, minYear, maxYear),
                 this.validateValue(v2, minMonth, maxMonth),
-                this.validateValue(v3, minDay, maxDay)
+                this.validateValue(v3, minDay, maxDay),
+                this.validateValue(v4, minHour, maxHour),
+                this.validateValue(v5, minMinute, maxMinute)
             );
         },
-        setFocus(f1, f2, f3) {
+        setFocus(f1 = false, f2 = false, f3 = false, f4 = false, f5 = false) {
             let index;
             if (f1) {
-               index = 1; 
+                index = 1;
             } else if (f2) {
                 index = 2;
             } else if (f3) {
                 index = 3;
+            } else if (f4) {
+                index = 4;
+            } else if (f5) {
+                index = 5;
             }
             this.setState({
                 yearFocused: f1,
                 monthFocused: f2,
                 dayFocused: f3,
+                hourFocused: f4,
+                minuteFocused: f5,
                 currentFocuse: index
             });
         },
@@ -246,13 +281,17 @@ export default {
                 return;
             }
             let value;
-            const { inputYearValue, inputMonthValue, inputDayValue, currentFocuse } = this.state;
-            if (currentFocuse == 1) { 
+            const { inputYearValue, inputMonthValue, inputDayValue, inputHourValue, inputMinuteValue, currentFocuse } = this.state;
+            if (currentFocuse == 1) {
                 value = this.getCurrentValidValue(inputYearValue);
             } else if (currentFocuse == 2) {
                 value = this.getCurrentValidValue(inputMonthValue);
             } else if (currentFocuse == 3) {
                 value = this.getCurrentValidValue(inputDayValue);
+            } else if (currentFocuse == 4) {
+                value = this.getCurrentValidValue(inputHourValue);
+            } else if (currentFocuse == 5) {
+                value = this.getCurrentValidValue(inputMinuteValue);
             }
             if (isNaN(value)) {
                 return;
@@ -262,14 +301,20 @@ export default {
                 return;
             }
             if (currentFocuse == 1) {
-                this.setValue(val, inputMonthValue, inputDayValue);
-                this.setFocus(true, false, false);
+                this.setValue(val, inputMonthValue, inputDayValue, inputHourValue, inputMinuteValue);
+                this.setFocus(true);
             } else if (currentFocuse == 2) {
-                this.setValue(inputYearValue, val, inputDayValue);
-                this.setFocus(false, true, false);
+                this.setValue(inputYearValue, val, inputDayValue, inputHourValue, inputMinuteValue);
+                this.setFocus(false, true);
             } else if (currentFocuse == 3) {
-                this.setValue(inputYearValue, inputMonthValue, val);
+                this.setValue(inputYearValue, inputMonthValue, val, inputHourValue, inputMinuteValue);
                 this.setFocus(false, false, true);
+            } else if (currentFocuse == 4) {
+                this.setValue(inputYearValue, inputMonthValue, inputDayValue, val, inputMinuteValue);
+                this.setFocus(false, false, false, true);
+            } else if (currentFocuse == 5) {
+                this.setValue(inputYearValue, inputMonthValue, inputDayValue, inputHourValue, val);
+                this.setFocus(false, false, false, false, true);
             }
         },
         down(e) {
