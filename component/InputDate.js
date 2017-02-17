@@ -19,16 +19,6 @@ const InputDate = React.createClass({
         readOnly: PropTypes.bool,
         max: PropTypes.number,
         min: PropTypes.number,
-        maxYear: PropTypes.number,
-        minYear: PropTypes.number,
-        maxMonth: PropTypes.number,
-        minMonth: PropTypes.number, 
-        maxDay: PropTypes.number,
-        minDay: PropTypes.number,
-        maxHour: PropTypes.number,
-        minHour: PropTypes.number,
-        maxMinute: PropTypes.number,
-        minMinute: PropTypes.number,
         maxDate: PropTypes.number,
         minDate: PropTypes.number,
         size: PropTypes.oneOf(['lg', 'sm']),
@@ -111,16 +101,6 @@ const InputDate = React.createClass({
         // https://fb.me/react-unknown-prop
         delete props.prefixCls;
         // ref for test
-        delete props.maxYear; 
-        delete props.minYear;
-        delete props.maxMonth;
-        delete props.minMonth;
-        delete props.maxDay;
-        delete props.minDay;
-        delete props.maxHour;
-        delete props.minHour;
-        delete props.maxMinute;
-        delete props.minMinute;
         delete props.maxDate;
         delete props.minDate;
         return ( < div className = { classes }
