@@ -5,11 +5,11 @@ import InputDate from './InputDate';
 const Component = React.createClass({
     render() {
         return ( <div style = {{ width: '200px' }}>
-            	<InputDate />
+            	<InputDate maxDate={new Date().getTime()} />
             </div>	
         );
 
     }
 });
 
-ReactDOM.render( <Component /> , document.getElementById('app'));
+ReactDOM.render( <Component /> , document.getElementById('app')); 

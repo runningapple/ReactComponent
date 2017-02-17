@@ -16,16 +16,8 @@ export default {
             return {
                 max: Infinity, //Infinity means the positive infinity
                 min: 0,
-                maxYear: 9999,
-                minYear: 0,
-                maxMonth: 12,
-                minMonth: 0,
-                maxDay: 31, //the max date should judge by the year
-                minDay: 0,
-                maxHour: 24,
-                minHour: 0,
-                maxMinute: 59,
-                minMinute: 0,
+                maxDate: undefined,
+                minDate: undefined,
                 step: 1,
                 style: {},
                 defaultValue: new Date().getTime(),
@@ -42,6 +34,26 @@ export default {
                 value = new Date(props.value);
             } else {
                 value = new Date(props.defaultValue);
+            }
+            let maxDate, minDate;
+            let maxYear: 9999, minYear: 0, maxMonth: 12, minMonth: 0, maxDay: 31;
+            let minDay: 0, maxHour: 24, minHour: 0, maxMinute: 59, minMinute: 0
+
+            if ('maxDate' in props) {
+                maxDate = new Date(props.maxDate);
+                maxYear = maxDate.getFullYear();
+                maxMonth = maxDate.getMonth();
+                maxDay = maxDate.getDate();
+                maxHour = maxDate.getHours();
+                maxMinute = maxDate.getMinutes();
+            }
+            if ('minDate' in props) {
+                minDate = new Date(props.minDate);
+                minYear = minDate.getFullYear();
+                minMonth = minDate.getMonth();
+                minDay = minDate.getDate();
+                minHour = minDate.getHours();
+                minMinute = minDate.getMinutes();
             }
             let _inputYearValue = value.getFullYear();
             let _inputMonthValue = value.getMonth();
@@ -65,7 +77,17 @@ export default {
                 hourFocused: undefined,
                 minuteFocused: undefined,
                 currentFocuse: 1, //remember the latest focuse component in [input_year, input_month, input_day, input_hour, input_minute]
-                value
+                value,
+                maxYear,
+                minYear,
+                maxMonth,
+                minMonth,
+                maxDay, //the max date should judge by the year
+                minDay,
+                maxHour,
+                minHour,
+                maxMinute,
+                minMinute
             };
         },
         componentWillReceiveProps(nextProps) {
@@ -99,27 +121,27 @@ export default {
             });
         },
         onChangeYear(e) {
-            const { maxYear, minYear } = this.props;
+            const { maxYear, minYear } = this.state;
             const year = this.getValueFromEvent(e).trim();
             this.onChange(this.validateValue(year, minYear, maxYear));
         },
         onChangeMonth(e) {
-            const { maxMonth, minMonth } = this.props;
+            const { maxMonth, minMonth } = this.state;
             const month = this.getValueFromEvent(e).trim();
             this.onChange(undefined, this.validateValue(month, minMonth, maxMonth));
         },
         onChangeDay(e) {
-            const { maxDay, minDay } = this.props;
+            const { maxDay, minDay } = this.state;
             const date = this.getValueFromEvent(e).trim();
             this.onChange(undefined, undefined, this.validateValue(date, minDay, maxDay));
         },
         onChangeHour(e) {
-            const { maxHour, minHour } = this.props;
+            const { maxHour, minHour } = this.state;
             const hour = this.getValueFromEvent(e).trim();
             this.onChange(undefined, undefined, undefined, this.validateValue(hour, minHour, maxHour));
         },
         onChangeMinute(e) {
-            const { maxMinute, minMinute } = this.props;
+            const { maxMinute, minMinute } = this.state;
             const minute = this.getValueFromEvent(e).trim();
             this.onChange(undefined, undefined, undefined, undefined, this.validateValue(minute, minMinute, maxMinute));
         },
@@ -155,7 +177,7 @@ export default {
                 _inputYearValue = currentValue;
             } else if (monthFocused) {
                 _inputMonthValue = currentValue;
-            } else if (dayFocused){
+            } else if (dayFocused) {
                 _inputDayValue = currentValue;
             } else if (hourFocused) {
                 _inputHourValue = currentValue;
@@ -196,7 +218,7 @@ export default {
             return parseInt(value);
         },
         setValue(v1, v2, v3, v4, v5) {
-            const { maxYear, minYear, maxMonth, minMonth, maxDay, minDay, maxHour, minHour, minMinute, maxMinute } = this.props;
+            const { maxYear, minYear, maxMonth, minMonth, maxDay, minDay, maxHour, minHour, minMinute, maxMinute } = this.state;
             this.onChange(
                 this.validateValue(v1, minYear, maxYear),
                 this.validateValue(v2, minMonth, maxMonth),

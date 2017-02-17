@@ -29,6 +29,8 @@ const InputDate = React.createClass({
         minHour: PropTypes.number,
         maxMinute: PropTypes.number,
         minMinute: PropTypes.number,
+        maxDate: PropTypes.number,
+        minDate: PropTypes.number,
         size: PropTypes.oneOf(['lg', 'sm']),
         step: PropTypes.oneOfType([
             PropTypes.number,
@@ -64,7 +66,6 @@ const InputDate = React.createClass({
         return e.target.value;
     },
     leadingZeroHnadler(value, info = 'others') {
-        let result = '';
         switch (info) {
             case 'year':
                 if (value == 0) return '0000';
@@ -74,7 +75,7 @@ const InputDate = React.createClass({
                 if (value < 10) return '0' + value; 
                 break;
             default:
-                console.log('leading zero error!!!');
+                console.log('leading zero error!!!'); 
         }
         return value.toString();
     },
@@ -120,7 +121,8 @@ const InputDate = React.createClass({
         delete props.minHour;
         delete props.maxMinute;
         delete props.minMinute;
-
+        delete props.maxDate;
+        delete props.minDate;
         return ( < div className = { classes }
             style = { props.style } >
             < div className = { `${prefixCls}-handler-wrap` } >
