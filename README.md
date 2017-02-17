@@ -6,7 +6,7 @@ https://runningapple.github.io/date-time-input/example/index.html
   
 you can use the props maxDate and minDate to limit user's input date  
   
-    <DateInputDate maxDate={new Date(2020, 12, 13)} minDate={new Date(2000, 12, 1)}>  
+    <DateTimeInput maxDate={new Date(2020, 12, 13)} minDate={new Date(2000, 12, 1)}>  
 
 How to run the date-time-input?  
 
