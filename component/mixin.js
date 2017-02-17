@@ -36,8 +36,16 @@ export default {
                 value = new Date(props.defaultValue);
             }
             let maxDate, minDate;
-            let maxYear: 9999, minYear: 0, maxMonth: 12, minMonth: 0, maxDay: 31;
-            let minDay: 0, maxHour: 24, minHour: 0, maxMinute: 59, minMinute: 0
+            let maxYear = 9999,
+                minYear = 0,
+                maxMonth = 12,
+                minMonth = 0,
+                maxDay = 31;
+            let minDay = 0,
+                maxHour = 24,
+                minHour = 0,
+                maxMinute = 59,
+                minMinute = 0;
 
             if ('maxDate' in props) {
                 maxDate = new Date(props.maxDate);
