@@ -1,6 +1,6 @@
-# ReactComponent  
+# date-time-input
 
-How to run the component?  
+How to run the date-time-input?  
 
 1.git clone https://github.com/runningapple/date-time-input.git
 
