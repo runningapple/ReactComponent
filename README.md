@@ -1,4 +1,8 @@
-# date-time-input
+# date-time-input  
+
+online example: 
+
+https://runningapple.github.io/date-time-input/example/index.html  
 
 How to run the date-time-input?  
 
