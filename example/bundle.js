@@ -9502,9 +9502,9 @@ var InputDate = _react2.default.createClass({
         this.componentDidUpdate();
     },
     componentDidUpdate: function componentDidUpdate() {
-        if (this.state.yearFocused && document.activeElement !== this.refs.input_year) {
-            this.refs.input_year.focus();
-        }
+        //if (this.state.yearFocused && document.activeElement !== this.refs.input_year) {
+        //    this.refs.input_year.focus();//autofocus
+        //}
     },
     onKeyDown: function onKeyDown(e) {
         var _props;
@@ -9540,6 +9540,26 @@ var InputDate = _react2.default.createClass({
         }
         return value.toString();
     },
+    selectYear: function selectYear(e) {
+        e.preventDefault();
+        this.refs.input_year.select();
+    },
+    selectMonth: function selectMonth(e) {
+        e.preventDefault();
+        this.refs.input_month.select();
+    },
+    selectDay: function selectDay(e) {
+        e.preventDefault();
+        this.refs.input_day.select();
+    },
+    selectHour: function selectHour(e) {
+        e.preventDefault();
+        this.refs.input_hour.select();
+    },
+    selectMinute: function selectMinute(e) {
+        e.preventDefault();
+        this.refs.input_minute.select();
+    },
     render: function render() {
         var _classNames;
 
@@ -9553,10 +9573,12 @@ var InputDate = _react2.default.createClass({
         }
         var classes = (0, _classnames2.default)((_classNames = {}, _defineProperty(_classNames, prefixCls, true), _defineProperty(_classNames, props.className, !!props.className), _defineProperty(_classNames, prefixCls + '-disabled', props.disabled), _defineProperty(_classNames, prefixCls + '-focused', this.state.focused), _defineProperty(_classNames, prefixCls + '-' + size, !!size), _classNames));
 
-        // const editable = !props.readOnly && !props.disabled;
-
         var inputYearValue = this.leadingZeroHnadler(this.state.inputYearValue, 'year');
-        var inputMonthValue = this.leadingZeroHnadler(this.state.inputMonthValue);
+        var inputMonthValue = this.leadingZeroHnadler(parseInt(this.state.inputMonthValue));
+        console.log('value', this.state.value);
+        if (typeof this.state.value != 'undefined') {
+            inputMonthValue = this.leadingZeroHnadler(parseInt(this.state.inputMonthValue) + 1);
+        }
         var inputDayValue = this.leadingZeroHnadler(this.state.inputDayValue);
         var inputHourValue = this.leadingZeroHnadler(this.state.inputHourValue);
         var inputMinuteValue = this.leadingZeroHnadler(this.state.inputMinuteValue);
@@ -9627,6 +9649,7 @@ var InputDate = _react2.default.createClass({
                     readOnly: props.readOnly,
                     disabled: props.disabled,
                     name: props.name,
+                    onClick: this.selectYear,
                     onChange: this.onChangeYear,
                     value: inputYearValue
                 })),
@@ -9642,6 +9665,7 @@ var InputDate = _react2.default.createClass({
                     readOnly: props.readOnly,
                     disabled: props.disabled,
                     name: props.name,
+                    onClick: this.selectMonth,
                     onChange: this.onChangeMonth,
                     value: inputMonthValue
                 })),
@@ -9657,6 +9681,7 @@ var InputDate = _react2.default.createClass({
                     readOnly: props.readOnly,
                     disabled: props.disabled,
                     name: props.name,
+                    onClick: this.selectDay,
                     onChange: this.onChangeDay,
                     value: inputDayValue
                 })),
@@ -9672,6 +9697,7 @@ var InputDate = _react2.default.createClass({
                     readOnly: props.readOnly,
                     disabled: props.disabled,
                     name: props.name,
+                    onClick: this.selectHour,
                     onChange: this.onChangeHour,
                     value: inputHourValue
                 })),
@@ -9687,6 +9713,7 @@ var InputDate = _react2.default.createClass({
                     readOnly: props.readOnly,
                     disabled: props.disabled,
                     name: props.name,
+                    onClick: this.selectMinute,
                     onChange: this.onChangeMinute,
                     value: inputMinuteValue
                 }))
@@ -9747,25 +9774,22 @@ exports.default = {
         };
     },
     getInitialState: function getInitialState() {
-        var _value = void 0;
-        var _props = this.props,
-            value = _props.value,
-            defaultValue = _props.defaultValue,
-            maxDate = _props.maxDate,
-            minDate = _props.minDate;
+        var _value = undefined;
+        var value = this.props.value;
 
+        var _inputYearValue = 0;
+        var _inputMonthValue = 0;
+        var _inputDayValue = 0;
+        var _inputHourValue = 0;
+        var _inputMinuteValue = 0;
         if (value) {
             _value = new Date(value);
-        } else {
-            _value = new Date(defaultValue);
+            _inputYearValue = this.toPrecisionAsStep(_value.getFullYear());
+            _inputMonthValue = this.toPrecisionAsStep(_value.getMonth());
+            _inputDayValue = this.toPrecisionAsStep(_value.getDate());
+            _inputHourValue = this.toPrecisionAsStep(_value.getHours());
+            _inputMinuteValue = this.toPrecisionAsStep(_value.getMinutes());
         }
-        var maxDateArray = this.getMaxDate(maxDate);
-        var minDateArray = this.getMinDate(minDate);
-        var _inputYearValue = this.toPrecisionAsStep(_value.getFullYear());
-        var _inputMonthValue = this.toPrecisionAsStep(_value.getMonth());
-        var _inputDayValue = this.toPrecisionAsStep(_value.getDate());
-        var _inputHourValue = this.toPrecisionAsStep(_value.getHours());
-        var _inputMinuteValue = this.toPrecisionAsStep(_value.getMinutes());
         return {
             inputYearValue: _inputYearValue,
             inputMonthValue: _inputMonthValue,
@@ -9778,150 +9802,168 @@ exports.default = {
             hourFocused: undefined,
             minuteFocused: undefined,
             currentFocuse: 1, //remember the latest focuse component in [input_year, input_month, input_day, input_hour, input_minute]
-            value: _value,
-            maxYear: maxDateArray[0],
-            minYear: minDateArray[0],
-            maxMonth: maxDateArray[1],
-            minMonth: minDateArray[1],
-            maxDay: maxDateArray[2], //the max date should judge by the year
-            minDay: minDateArray[2],
-            maxHour: maxDateArray[3],
-            minHour: minDateArray[3],
-            maxMinute: maxDateArray[4],
-            minMinute: minDateArray[4]
+            value: _value
         };
     },
     componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
-        var _value = void 0;
-        var value = nextProps.value,
-            defaultValue = nextProps.defaultValue,
-            maxDate = nextProps.maxDate,
-            minDate = nextProps.minDate;
+        var _value = undefined;
+        var value = nextProps.value;
 
+        var _inputYearValue = 0;
+        var _inputMonthValue = 0;
+        var _inputDayValue = 0;
+        var _inputHourValue = 0;
+        var _inputMinuteValue = 0;
         if (value) {
             _value = new Date(value);
-        } else {
-            _value = new Date(defaultValue);
+            _inputMonthValue = this.toPrecisionAsStep(_value.getMonth());
+            _inputDayValue = this.toPrecisionAsStep(_value.getDate());
+            _inputHourValue = this.toPrecisionAsStep(_value.getHours());
+            _inputMinuteValue = this.toPrecisionAsStep(_value.getMinutes());
         }
-        var maxDateArray = this.getMaxDate(maxDate);
-        var minDateArray = this.getMinDate(minDate);
-        var _inputYearValue = _value.getFullYear();
-        var _inputMonthValue = _value.getMonth();
-        var _inputDayValue = _value.getDate();
-        var _inputHourValue = _value.getHours();
-        var _inputMinuteValue = _value.getMinutes();
-        _inputYearValue = this.toPrecisionAsStep(_inputYearValue);
-        _inputMonthValue = this.toPrecisionAsStep(_inputMonthValue);
-        _inputDayValue = this.toPrecisionAsStep(_inputDayValue);
-        _inputHourValue = this.toPrecisionAsStep(_inputHourValue);
-        _inputMinuteValue = this.toPrecisionAsStep(_inputMinuteValue);
-        this.onChange(_inputYearValue, _inputMonthValue, _inputDayValue, _inputHourValue, _inputMinuteValue);
         this.setState({
-            maxYear: maxDateArray[0],
-            minYear: minDateArray[0],
-            maxMonth: maxDateArray[1],
-            minMonth: minDateArray[1],
-            maxDay: maxDateArray[2], //the max date should judge by the year
-            minDay: minDateArray[2],
-            maxHour: maxDateArray[3],
-            minHour: minDateArray[3],
-            maxMinute: maxDateArray[4],
-            minMinute: minDateArray[4]
+            inputYearValue: _inputYearValue,
+            inputMonthValue: _inputMonthValue,
+            inputDayValue: _inputDayValue,
+            inputHourValue: _inputHourValue,
+            inputMinuteValue: _inputMinuteValue,
+            value: _value
         });
     },
-    getMaxDate: function getMaxDate(maxDate) {
-        var year = 9999,
-            month = 12,
-            day = 31,
-            hour = 23,
-            minute = 59;
-        if (maxDate) {
-            var _maxDate = new Date(maxDate);
-            year = _maxDate.getFullYear();
-            month = _maxDate.getMonth();
-            day = _maxDate.getDate();
-            hour = _maxDate.getHours();
-            minute = _maxDate.getMinutes();
+    onChange: function onChange(v1, v2, v3, v4, v5) {
+        if (v1 == v2 && v2 == v3 && v3 == v4 && v4 == v5 && v5 == 0) {
+            this.setState({
+                value: undefined,
+                inputYearValue: v1,
+                inputMonthValue: v2,
+                inputDayValue: v3,
+                inputHourValue: v4,
+                inputMinuteValue: v5
+            });
+            return;
         }
-        return [year, month, day, hour, minute];
-    },
-    getMinDate: function getMinDate(minDate) {
-        var year = 0,
-            month = 0,
-            day = 0,
-            hour = 0,
-            minute = 0;
-        if (minDate) {
-            var _minDate = new Date(minDate);
-            year = _minDate.getFullYear();
-            month = _minDate.getMonth();
-            day = _minDate.getDate();
-            hour = _minDate.getHours();
-            minute = _minDate.getMinutes();
+        if (v1 != 0 && v3 == 0) v3 = 1;
+        if (v1 == 0 && v2 == -1) {
+            this.setState({
+                value: undefined,
+                inputMonthValue: 0
+            });
+            return;
         }
-        return [year, month, day, hour, minute];
-    },
-    onChange: function onChange() {
-        var v1 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.state.inputYearValue;
-        var v2 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this.state.inputMonthValue;
-        var v3 = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : this.state.inputDayValue;
-        var v4 = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : this.state.inputHourValue;
-        var v5 = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : this.state.inputMinuteValue;
+        var _props = this.props,
+            maxDate = _props.maxDate,
+            minDate = _props.minDate;
 
-        var value = new Date(parseInt(v1), parseInt(v2) - 1, parseInt(v3), parseInt(v4), parseInt(v5), 0);
-        this.setState({
-            inputYearValue: v1,
-            inputMonthValue: v2,
-            inputDayValue: v3,
-            inputHourValue: v4,
-            inputMinuteValue: v5,
-            value: value
-        });
+        if (isNaN(v1) || isNaN(v2) || isNaN(v3) || isNaN(v4) || isNaN(v5)) return; //filter the non-number character
+        if (v1 > 9999 || v1 < 0 || v2 > 12 || v3 > 31 || v3 < 1 || v4 > 23 || v4 < 0 || v5 > 59 || v5 < 0) return; //filter the number which value overflow
+        if (v2 < 0) v2 = 0;
+        var _value = new Date();
+        _value.setFullYear(parseInt(v1));
+        _value.setMonth(parseInt(v2));
+        if (new Date(parseInt(v1), parseInt(v2) + 1, 0).getDate() < v3) {
+            v3 = new Date(parseInt(v1), parseInt(v2) + 1, 0).getDate();
+        }
+        _value.setDate(parseInt(v3));
+        _value.setHours(parseInt(v4));
+        _value.setMinutes(parseInt(v5));
+        _value.setSeconds(0);
+        _value.setMilliseconds(0);
+        var limitFlag = true;
+        if (maxDate && maxDate <= _value.getTime()) limitFlag = false;
+        if (minDate && minDate >= _value.getTime()) limitFlag = false;
+        //console.log('vv', v1, v2, v3, v4, limitFlag, _value);
+        if (this.checkStateValue(v1, v2, v3, v4, v5) && limitFlag) {
+            this.setState({
+                inputYearValue: v1,
+                inputMonthValue: v2,
+                inputDayValue: v3,
+                inputHourValue: v4,
+                inputMinuteValue: v5,
+                value: _value
+            });
+            this.props.onChange(_value);
+        } else {
+            //this.setState({
+            //    inputYearValue: v1,
+            //    inputMonthValue: v2,
+            //    inputDayValue: v3,
+            //    inputHourValue: v4,
+            //    inputMinuteValue: v5,
+            //});
+            console.log('no change');
+        }
+    },
+
+    /**
+     * check new input value is equal to the value in state
+     * @param v1
+     * @param v2
+     * @param v3
+     * @param v4
+     * @param v5
+     */
+    checkStateValue: function checkStateValue(_v1, _v2, _v3, _v4, _v5) {
+        var _state = this.state,
+            v1 = _state.v1,
+            v2 = _state.v2,
+            v3 = _state.v3,
+            v4 = _state.v4,
+            v5 = _state.v5;
+
+        if (_v1 !== v1 && _v2 !== v2 && _v3 !== v3 && _v4 !== v4 && _v5 !== v5) {
+            return true;
+        }
+        return false;
     },
     onChangeYear: function onChangeYear(e) {
-        var _state = this.state,
-            maxYear = _state.maxYear,
-            minYear = _state.minYear;
+        var _state2 = this.state,
+            inputMonthValue = _state2.inputMonthValue,
+            inputDayValue = _state2.inputDayValue,
+            inputHourValue = _state2.inputHourValue,
+            inputMinuteValue = _state2.inputMinuteValue;
 
         var year = this.getValueFromEvent(e).trim();
-        this.onChange(this.validateValue(year, minYear, maxYear));
+        this.onChange(year, inputMonthValue, inputDayValue, inputHourValue, inputMinuteValue);
     },
     onChangeMonth: function onChangeMonth(e) {
-        var _state2 = this.state,
-            maxMonth = _state2.maxMonth,
-            minMonth = _state2.minMonth;
+        var _state3 = this.state,
+            inputYearValue = _state3.inputYearValue,
+            inputDayValue = _state3.inputDayValue,
+            inputHourValue = _state3.inputHourValue,
+            inputMinuteValue = _state3.inputMinuteValue;
 
         var month = this.getValueFromEvent(e).trim();
-        this.onChange(undefined, this.validateValue(month, minMonth, maxMonth));
+        this.onChange(inputYearValue, month - 1, inputDayValue, inputHourValue, inputMinuteValue);
     },
     onChangeDay: function onChangeDay(e) {
-        var _state3 = this.state,
-            maxDay = _state3.maxDay,
-            minDay = _state3.minDay,
-            inputYearValue = _state3.inputYearValue,
-            inputMonthValue = _state3.inputMonthValue;
+        var _state4 = this.state,
+            inputYearValue = _state4.inputYearValue,
+            inputMonthValue = _state4.inputMonthValue,
+            inputHourValue = _state4.inputHourValue,
+            inputMinuteValue = _state4.inputMinuteValue;
 
-        if (inputYearValue && inputMonthValue) {
-            maxDay = new Date(inputYearValue, inputMonthValue, 0).getDate();
-        }
         var date = this.getValueFromEvent(e).trim();
-        this.onChange(undefined, undefined, this.validateValue(date, minDay, maxDay));
+        this.onChange(inputYearValue, inputMonthValue, date, inputHourValue, inputMinuteValue);
     },
     onChangeHour: function onChangeHour(e) {
-        var _state4 = this.state,
-            maxHour = _state4.maxHour,
-            minHour = _state4.minHour;
+        var _state5 = this.state,
+            inputYearValue = _state5.inputYearValue,
+            inputMonthValue = _state5.inputMonthValue,
+            inputDayValue = _state5.inputDayValue,
+            inputMinuteValue = _state5.inputMinuteValue;
 
         var hour = this.getValueFromEvent(e).trim();
-        this.onChange(undefined, undefined, undefined, this.validateValue(hour, minHour, maxHour));
+        this.onChange(inputYearValue, inputMonthValue, inputDayValue, hour, inputMinuteValue);
     },
     onChangeMinute: function onChangeMinute(e) {
-        var _state5 = this.state,
-            maxMinute = _state5.maxMinute,
-            minMinute = _state5.minMinute;
+        var _state6 = this.state,
+            inputYearValue = _state6.inputYearValue,
+            inputMonthValue = _state6.inputMonthValue,
+            inputDayValue = _state6.inputDayValue,
+            inputHourValue = _state6.inputHourValue;
 
         var minute = this.getValueFromEvent(e).trim();
-        this.onChange(undefined, undefined, undefined, undefined, this.validateValue(minute, minMinute, maxMinute));
+        this.onChange(inputYearValue, inputMonthValue, inputDayValue, inputHourValue, minute);
     },
     onYearFocus: function onYearFocus() {
         var _props2;
@@ -9956,17 +9998,18 @@ exports.default = {
     onBlur: function onBlur(e) {
         var _props7;
 
-        var _state6 = this.state,
-            yearFocused = _state6.yearFocused,
-            monthFocused = _state6.monthFocused,
-            dayFocused = _state6.dayFocused,
-            hourFocused = _state6.hourFocused,
-            minuteFocused = _state6.minuteFocused,
-            inputYearValue = _state6.inputYearValue,
-            inputMonthValue = _state6.inputMonthValue,
-            inputDayValue = _state6.inputDayValue,
-            inputMinuteValue = _state6.inputMinuteValue,
-            inputHourValue = _state6.inputHourValue;
+        var _state7 = this.state,
+            yearFocused = _state7.yearFocused,
+            monthFocused = _state7.monthFocused,
+            dayFocused = _state7.dayFocused,
+            hourFocused = _state7.hourFocused,
+            minuteFocused = _state7.minuteFocused,
+            inputYearValue = _state7.inputYearValue,
+            inputMonthValue = _state7.inputMonthValue,
+            inputDayValue = _state7.inputDayValue,
+            inputMinuteValue = _state7.inputMinuteValue,
+            inputHourValue = _state7.inputHourValue;
+
 
         var _inputYearValue = inputYearValue;
         var _inputMonthValue = inputMonthValue;
@@ -9977,7 +10020,7 @@ exports.default = {
         if (yearFocused) {
             _inputYearValue = currentValue;
         } else if (monthFocused) {
-            _inputMonthValue = currentValue;
+            _inputMonthValue = currentValue - 1;
         } else if (dayFocused) {
             _inputDayValue = currentValue;
         } else if (hourFocused) {
@@ -9986,7 +10029,7 @@ exports.default = {
             _inputMinuteValue = currentValue;
         }
         this.setFocus();
-        this.setValue(_inputYearValue, _inputMonthValue, _inputDayValue, _inputHourValue, _inputMinuteValue);
+        this.onChange(_inputYearValue, _inputMonthValue, _inputDayValue, _inputHourValue, _inputMinuteValue);
 
         for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
             args[_key - 1] = arguments[_key];
@@ -10022,26 +10065,6 @@ exports.default = {
             return parseInt(maxValue);
         }
         return parseInt(value);
-    },
-    setValue: function setValue(v1, v2, v3, v4, v5) {
-        var _state7 = this.state,
-            inputYearValue = _state7.inputYearValue,
-            inputMonthValue = _state7.inputMonthValue,
-            maxYear = _state7.maxYear,
-            minYear = _state7.minYear,
-            maxMonth = _state7.maxMonth,
-            minMonth = _state7.minMonth,
-            maxDay = _state7.maxDay,
-            minDay = _state7.minDay,
-            maxHour = _state7.maxHour,
-            minHour = _state7.minHour,
-            minMinute = _state7.minMinute,
-            maxMinute = _state7.maxMinute;
-
-        if (inputYearValue && inputMonthValue) {
-            maxDay = new Date(inputYearValue, inputMonthValue, 0).getDate();
-        }
-        this.onChange(this.validateValue(v1, minYear, maxYear), this.validateValue(v2, minMonth, maxMonth), this.validateValue(v3, minDay, maxDay), this.validateValue(v4, minHour, maxHour), this.validateValue(v5, minMinute, maxMinute));
     },
     setFocus: function setFocus() {
         var f1 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
@@ -10083,10 +10106,6 @@ exports.default = {
         }
         return precision;
     },
-    getPrecisionFactor: function getPrecisionFactor() {
-        var precision = this.getPrecision();
-        return Math.pow(10, precision);
-    },
     toPrecisionAsStep: function toPrecisionAsStep(num) {
         if (isNaN(num) || num === '') {
             return num;
@@ -10095,32 +10114,10 @@ exports.default = {
         return Number(Number(num).toFixed(Math.abs(precision)));
     },
     upStep: function upStep(val) {
-        var _props8 = this.props,
-            step = _props8.step,
-            min = _props8.min;
-
-        var precisionFactor = this.getPrecisionFactor();
-        var result = void 0;
-        if (typeof val === 'number') {
-            result = (precisionFactor * val + precisionFactor * step) / precisionFactor;
-        } else {
-            result = min === -Infinity ? step : min;
-        }
-        return this.toPrecisionAsStep(result);
+        return val + 1;
     },
     downStep: function downStep(val) {
-        var _props9 = this.props,
-            step = _props9.step,
-            min = _props9.min;
-
-        var precisionFactor = this.getPrecisionFactor();
-        var result = void 0;
-        if (typeof val === 'number') {
-            result = (precisionFactor * val - precisionFactor * step) / precisionFactor;
-        } else {
-            result = min === -Infinity ? -step : min;
-        }
-        return this.toPrecisionAsStep(result);
+        return val - 1;
     },
     step: function step(type, e) {
         if (e) {
@@ -10154,23 +10151,45 @@ exports.default = {
             return;
         }
         var val = this[type + 'Step'](value); //匹配upStep或者downStep方法调用
-        if (val > props.max || val < props.min) {
-            return;
+        if (currentFocuse == 1) {
+            if (val >= 9999 || val <= 0) {
+                return;
+            }
+        } else if (currentFocuse == 2) {
+            if (val >= 12 || val + 1 <= 0) {
+                return;
+            }
+        } else if (currentFocuse == 3) {
+            var maxDay = 32;
+            if (inputYearValue && inputMonthValue) {
+                maxDay = new Date(inputYearValue, inputMonthValue + 1, 0).getDate() + 1;
+            }
+            if (val >= maxDay || val <= 0) {
+                return;
+            }
+        } else if (currentFocuse == 4) {
+            if (val >= 24 || val + 1 <= 0) {
+                return;
+            }
+        } else if (currentFocuse == 5) {
+            if (val >= 60 || val + 1 <= 0) {
+                return;
+            }
         }
         if (currentFocuse == 1) {
-            this.setValue(val, inputMonthValue, inputDayValue, inputHourValue, inputMinuteValue);
+            this.onChange(val, inputMonthValue, inputDayValue, inputHourValue, inputMinuteValue);
             this.setFocus(true);
         } else if (currentFocuse == 2) {
-            this.setValue(inputYearValue, val, inputDayValue, inputHourValue, inputMinuteValue);
+            this.onChange(inputYearValue, val, inputDayValue, inputHourValue, inputMinuteValue);
             this.setFocus(false, true);
         } else if (currentFocuse == 3) {
-            this.setValue(inputYearValue, inputMonthValue, val, inputHourValue, inputMinuteValue);
+            this.onChange(inputYearValue, inputMonthValue, val, inputHourValue, inputMinuteValue);
             this.setFocus(false, false, true);
         } else if (currentFocuse == 4) {
-            this.setValue(inputYearValue, inputMonthValue, inputDayValue, val, inputMinuteValue);
+            this.onChange(inputYearValue, inputMonthValue, inputDayValue, val, inputMinuteValue);
             this.setFocus(false, false, false, true);
         } else if (currentFocuse == 5) {
-            this.setValue(inputYearValue, inputMonthValue, inputDayValue, inputHourValue, val);
+            this.onChange(inputYearValue, inputMonthValue, inputDayValue, inputHourValue, val);
             this.setFocus(false, false, false, false, true);
         }
     },
