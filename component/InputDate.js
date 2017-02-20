@@ -41,9 +41,9 @@ const InputDate = React.createClass({
         this.componentDidUpdate();
     },
     componentDidUpdate() {
-        if (this.state.yearFocused && document.activeElement !== this.refs.input_year) {
-            this.refs.input_year.focus();
-        }
+        //if (this.state.yearFocused && document.activeElement !== this.refs.input_year) {
+        //    this.refs.input_year.focus();//autofocus
+        //}
     },
     onKeyDown(e, ...args) {
         if (e.keyCode === 38) {
@@ -70,6 +70,26 @@ const InputDate = React.createClass({
         }
         return value.toString();
     },
+    selectYear(e) {
+        e.preventDefault();
+        this.refs.input_year.select();
+    },
+    selectMonth(e) {
+        e.preventDefault();
+        this.refs.input_month.select();
+    },
+    selectDay(e) {
+        e.preventDefault();
+        this.refs.input_day.select();
+    },
+    selectHour(e) {
+        e.preventDefault();
+        this.refs.input_hour.select();
+    },
+    selectMinute(e) {
+        e.preventDefault();
+        this.refs.input_minute.select();
+    },
     render() {
         const props = {...this.props};
         const prefixCls = props.prefixCls;
@@ -87,10 +107,8 @@ const InputDate = React.createClass({
             [`${prefixCls}-${size}`]: !!size
         });
 
-        // const editable = !props.readOnly && !props.disabled;
-
         let inputYearValue = this.leadingZeroHnadler(this.state.inputYearValue, 'year');
-        let inputMonthValue = this.leadingZeroHnadler(this.state.inputMonthValue);
+        let inputMonthValue = this.leadingZeroHnadler(parseInt(this.state.inputMonthValue)+1);
         let inputDayValue = this.leadingZeroHnadler(this.state.inputDayValue);
         let inputHourValue = this.leadingZeroHnadler(this.state.inputHourValue);
         let inputMinuteValue = this.leadingZeroHnadler(this.state.inputMinuteValue);
@@ -141,6 +159,7 @@ const InputDate = React.createClass({
                         readOnly={ props.readOnly }
                         disabled={ props.disabled }
                         name={ props.name }
+                        onClick={this.selectYear}
                         onChange={ this.onChangeYear }
                         value={ inputYearValue }
                     />-<input {...props }
@@ -154,6 +173,7 @@ const InputDate = React.createClass({
                     readOnly={ props.readOnly }
                     disabled={ props.disabled }
                     name={ props.name }
+                    onClick={this.selectMonth}
                     onChange={ this.onChangeMonth }
                     value={ inputMonthValue }
                 />-<input {...props }
@@ -167,6 +187,7 @@ const InputDate = React.createClass({
                         readOnly={ props.readOnly }
                         disabled={ props.disabled }
                         name={ props.name }
+                        onClick={this.selectDay}
                         onChange={ this.onChangeDay }
                         value={ inputDayValue }
                     /> <input {...props }
@@ -180,6 +201,7 @@ const InputDate = React.createClass({
                         readOnly={ props.readOnly }
                         disabled={ props.disabled }
                         name={ props.name }
+                        onClick={this.selectHour}
                         onChange={ this.onChangeHour }
                         value={ inputHourValue }
                     />:<input {...props }
@@ -193,6 +215,7 @@ const InputDate = React.createClass({
                         readOnly={ props.readOnly }
                         disabled={ props.disabled }
                         name={ props.name }
+                        onClick={this.selectMinute}
                         onChange={ this.onChangeMinute }
                         value={ inputMinuteValue }
                     />
