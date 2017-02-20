@@ -5,14 +5,14 @@ function noop() {
  * When click and hold on a button - the speed of auto changin the value.
  *
  */
-const SPEED = 200;
+ const SPEED = 200;
 
 /**
  * When click and hold on a button - the delay before auto changin the value.
  */
-const DELAY = 600;
+ const DELAY = 600;
 
-export default {
+ export default {
     getDefaultProps() {
         return {
             max: Infinity, //Infinity means the positive infinity
@@ -29,18 +29,21 @@ export default {
         };
     },
     getInitialState() {
-        let _value;
-        const { value, defaultValue } = this.props;
+        let _value = undefined;
+        const { value } = this.props;
+        let _inputYearValue = 0;
+        let _inputMonthValue = 0;
+        let _inputDayValue = 0;
+        let _inputHourValue = 0;
+        let _inputMinuteValue = 0;
         if (value) {
             _value = new Date(value);
-        } else {
-            _value = new Date(defaultValue);
+            _inputYearValue = this.toPrecisionAsStep(_value.getFullYear());
+            _inputMonthValue = this.toPrecisionAsStep(_value.getMonth());
+            _inputDayValue = this.toPrecisionAsStep(_value.getDate());
+            _inputHourValue = this.toPrecisionAsStep(_value.getHours());
+            _inputMinuteValue = this.toPrecisionAsStep(_value.getMinutes());
         }
-        const _inputYearValue = this.toPrecisionAsStep(_value.getFullYear());
-        const _inputMonthValue = this.toPrecisionAsStep(_value.getMonth());
-        const _inputDayValue = this.toPrecisionAsStep(_value.getDate());
-        const _inputHourValue = this.toPrecisionAsStep(_value.getHours());
-        const _inputMinuteValue = this.toPrecisionAsStep(_value.getMinutes());
         return {
             inputYearValue: _inputYearValue,
             inputMonthValue: _inputMonthValue,
@@ -57,23 +60,20 @@ export default {
         };
     },
     componentWillReceiveProps(nextProps) {
-        let _value;
-        const { value, defaultValue } = nextProps;
+        let _value = undefined;
+        const { value } = nextProps;
+        let _inputYearValue = 0;
+        let _inputMonthValue = 0;
+        let _inputDayValue = 0;
+        let _inputHourValue = 0;
+        let _inputMinuteValue = 0;
         if (value) {
             _value = new Date(value);
-        } else {
-            _value = new Date(defaultValue);
+            _inputMonthValue = this.toPrecisionAsStep(_value.getMonth());
+            _inputDayValue = this.toPrecisionAsStep(_value.getDate());
+            _inputHourValue = this.toPrecisionAsStep(_value.getHours());
+            _inputMinuteValue = this.toPrecisionAsStep(_value.getMinutes());
         }
-        let _inputYearValue = _value.getFullYear();
-        let _inputMonthValue = _value.getMonth();
-        let _inputDayValue = _value.getDate();
-        let _inputHourValue = _value.getHours();
-        let _inputMinuteValue = _value.getMinutes();
-        _inputYearValue = this.toPrecisionAsStep(_inputYearValue);
-        _inputMonthValue = this.toPrecisionAsStep(_inputMonthValue);
-        _inputDayValue = this.toPrecisionAsStep(_inputDayValue);
-        _inputHourValue = this.toPrecisionAsStep(_inputHourValue);
-        _inputMinuteValue = this.toPrecisionAsStep(_inputMinuteValue);
         this.setState({
             inputYearValue: _inputYearValue,
             inputMonthValue: _inputMonthValue,
@@ -84,6 +84,25 @@ export default {
         })
     },
     onChange(v1, v2, v3, v4, v5) {
+        if (v1 == v2 && v2 == v3 && v3 == v4 && v4 == v5 && v5 == 0) {
+            this.setState({
+                value: undefined,
+                inputYearValue: v1,
+                inputMonthValue: v2,
+                inputDayValue: v3,
+                inputHourValue: v4,
+                inputMinuteValue: v5
+            });
+            return;
+        }
+        if (v1 != 0 && v3 == 0) v3 = 1;
+        if (v1 == 0 && v2 == -1) {
+            this.setState({
+                value: undefined,
+                inputMonthValue: 0,
+            });
+            return;
+        }
         const { maxDate, minDate } = this.props;
         if (isNaN(v1) || isNaN(v2) || isNaN(v3) || isNaN(v4) || isNaN(v5)) return;  //filter the non-number character
         if (v1 > 9999 || v1 < 0 || v2 > 12 || v3 > 31 || v3 < 1 || v4 > 23 || v4 < 0 || v5 > 59 || v5 < 0) return; //filter the number which value overflow
@@ -91,7 +110,10 @@ export default {
         let _value = new Date();
         _value.setFullYear(parseInt(v1));
         _value.setMonth(parseInt(v2));
-        _value.setDate(parseInt(v3));
+        if (new Date(parseInt(v1), parseInt(v2)+1, 0).getDate() < v3) {
+            v3 = new Date(parseInt(v1), parseInt(v2)+1, 0).getDate();
+        }
+        _value.setDate(parseInt(v3)); 
         _value.setHours(parseInt(v4));
         _value.setMinutes(parseInt(v5));
         _value.setSeconds(0);
@@ -129,7 +151,7 @@ export default {
      * @param v4
      * @param v5
      */
-    checkStateValue(_v1, _v2, _v3, _v4, _v5) {
+     checkStateValue(_v1, _v2, _v3, _v4, _v5) {
         const {v1, v2, v3, v4, v5} = this.state;
         if (_v1 !== v1 && _v2 !== v2 && _v3 !== v3 && _v4 !== v4 && _v5 !== v5) {
             return true;

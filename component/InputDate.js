@@ -108,7 +108,11 @@ const InputDate = React.createClass({
         });
 
         let inputYearValue = this.leadingZeroHnadler(this.state.inputYearValue, 'year');
-        let inputMonthValue = this.leadingZeroHnadler(parseInt(this.state.inputMonthValue)+1);
+        let inputMonthValue = this.leadingZeroHnadler(parseInt(this.state.inputMonthValue));
+        console.log('value', this.state.value);
+        if (typeof this.state.value != 'undefined') {
+            inputMonthValue = this.leadingZeroHnadler(parseInt(this.state.inputMonthValue)+1);
+        }
         let inputDayValue = this.leadingZeroHnadler(this.state.inputDayValue);
         let inputHourValue = this.leadingZeroHnadler(this.state.inputHourValue);
         let inputMinuteValue = this.leadingZeroHnadler(this.state.inputMinuteValue);
