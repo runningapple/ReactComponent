@@ -4,7 +4,7 @@ import InputDate from './InputDate';
 
 const Component = React.createClass({
     render() {
-        return ( <div style = {{ width: '200px' }}>
+        return ( <div style = {{ width: '160px' }}>
             	<InputDate />
             </div>	
         );

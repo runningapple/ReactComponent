@@ -109,9 +109,8 @@ const InputDate = React.createClass({
 
         let inputYearValue = this.leadingZeroHnadler(this.state.inputYearValue, 'year');
         let inputMonthValue = this.leadingZeroHnadler(parseInt(this.state.inputMonthValue));
-        console.log('value', this.state.value);
         if (typeof this.state.value != 'undefined') {
-            inputMonthValue = this.leadingZeroHnadler(parseInt(this.state.inputMonthValue)+1);
+            inputMonthValue = this.leadingZeroHnadler(parseInt(this.state.inputMonthValue) + 1);
         }
         let inputDayValue = this.leadingZeroHnadler(this.state.inputDayValue);
         let inputHourValue = this.leadingZeroHnadler(this.state.inputHourValue);
@@ -132,26 +131,24 @@ const InputDate = React.createClass({
                     <a unselectable="unselectable"
                        ref="up"
                        onTouchEnd={ this.stop }
-                       onMouseDown={
-                this.up
-            }
+                       onMouseDown={ this.up }
                        onMouseUp={ this.stop }
                        onMouseLeave={ this.stop }
                        className={ `${prefixCls}-handler-up` }>
             <span unselectable="unselectable"
-                  onClick={ preventDefault }> + </span> </a > < a unselectable="unselectable"
-                                                                  ref="down"
-                                                                  onTouchEnd={ this.stop }
-                                                                  onMouseDown={
-                this.down
-            }
-                                                                  onMouseUp={ this.stop }
-                                                                  onMouseLeave={ this.stop }
-                                                                  className={ `${prefixCls}-handler-down` }>
+                  onClick={ preventDefault }> + </span> </a>
+                    <a unselectable="unselectable"
+                       ref="down"
+                       onTouchEnd={ this.stop }
+                       onMouseDown={ this.down }
+                       onMouseUp={ this.stop }
+                       onMouseLeave={ this.stop }
+                       className={ `${prefixCls}-handler-down` }>
             <span unselectable="unselectable"
                   onClick={ preventDefault }> - </span> </a>
                 </div>
                 <div className={ `${prefixCls}-input-wrap` }>
+                    <div style={{width: '60%', float: 'left'}}>
                     <input {...props }
                         ref="input_year"
                         style={ null }
@@ -181,48 +178,49 @@ const InputDate = React.createClass({
                     onChange={ this.onChangeMonth }
                     value={ inputMonthValue }
                 />-<input {...props }
-                        ref="input_day"
-                        style={ null }
-                        className={ `${prefixCls}-small` }
-                        autoComplete="off"
-                        onFocus={ this.onDayFocus }
-                        onBlur={ this.onBlur }
-                        onKeyDown={ this.onKeyDown }
-                        readOnly={ props.readOnly }
-                        disabled={ props.disabled }
-                        name={ props.name }
-                        onClick={this.selectDay}
-                        onChange={ this.onChangeDay }
-                        value={ inputDayValue }
-                    /> <input {...props }
-                        ref="input_hour"
-                        style={ null }
-                        className={ `${prefixCls}-hour` }
-                        autoComplete="off"
-                        onFocus={ this.onHourFocus }
-                        onBlur={ this.onBlur }
-                        onKeyDown={ this.onKeyDown }
-                        readOnly={ props.readOnly }
-                        disabled={ props.disabled }
-                        name={ props.name }
-                        onClick={this.selectHour}
-                        onChange={ this.onChangeHour }
-                        value={ inputHourValue }
-                    />:<input {...props }
-                        ref="input_minute"
-                        style={ null }
-                        className={ `${prefixCls}-minute` }
-                        autoComplete="off"
-                        onFocus={ this.onMinuteFocus }
-                        onBlur={ this.onBlur }
-                        onKeyDown={ this.onKeyDown }
-                        readOnly={ props.readOnly }
-                        disabled={ props.disabled }
-                        name={ props.name }
-                        onClick={this.selectMinute}
-                        onChange={ this.onChangeMinute }
-                        value={ inputMinuteValue }
-                    />
+                    ref="input_day"
+                    style={ null }
+                    className={ `${prefixCls}-small` }
+                    autoComplete="off"
+                    onFocus={ this.onDayFocus }
+                    onBlur={ this.onBlur }
+                    onKeyDown={ this.onKeyDown }
+                    readOnly={ props.readOnly }
+                    disabled={ props.disabled }
+                    name={ props.name }
+                    onClick={this.selectDay}
+                    onChange={ this.onChangeDay }
+                    value={ inputDayValue }
+                /></div> <div style={{width: '40%', float: 'left'}}><input {...props }
+                    ref="input_hour"
+                    style={ null }
+                    className={ `${prefixCls}-hour` }
+                    autoComplete="off"
+                    onFocus={ this.onHourFocus }
+                    onBlur={ this.onBlur }
+                    onKeyDown={ this.onKeyDown }
+                    readOnly={ props.readOnly }
+                    disabled={ props.disabled }
+                    name={ props.name }
+                    onClick={this.selectHour}
+                    onChange={ this.onChangeHour }
+                    value={ inputHourValue }
+                />:<input {...props }
+                    ref="input_minute"
+                    style={ null }
+                    className={ `${prefixCls}-minute` }
+                    autoComplete="off"
+                    onFocus={ this.onMinuteFocus }
+                    onBlur={ this.onBlur }
+                    onKeyDown={ this.onKeyDown }
+                    readOnly={ props.readOnly }
+                    disabled={ props.disabled }
+                    name={ props.name }
+                    onClick={this.selectMinute}
+                    onChange={ this.onChangeMinute }
+                    value={ inputMinuteValue }
+                />
+                    </div>
                 </div>
             </div>
         );

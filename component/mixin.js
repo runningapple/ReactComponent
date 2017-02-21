@@ -5,14 +5,14 @@ function noop() {
  * When click and hold on a button - the speed of auto changin the value.
  *
  */
- const SPEED = 200;
+const SPEED = 200;
 
 /**
  * When click and hold on a button - the delay before auto changin the value.
  */
- const DELAY = 600;
+const DELAY = 600;
 
- export default {
+export default {
     getDefaultProps() {
         return {
             max: Infinity, //Infinity means the positive infinity
@@ -69,6 +69,7 @@ function noop() {
         let _inputMinuteValue = 0;
         if (value) {
             _value = new Date(value);
+            _inputYearValue = this.toPrecisionAsStep(_value.getFullYear());
             _inputMonthValue = this.toPrecisionAsStep(_value.getMonth());
             _inputDayValue = this.toPrecisionAsStep(_value.getDate());
             _inputHourValue = this.toPrecisionAsStep(_value.getHours());
@@ -84,25 +85,19 @@ function noop() {
         })
     },
     onChange(v1, v2, v3, v4, v5) {
-        if (v1 == v2 && v2 == v3 && v3 == v4 && v4 == v5 && v5 == 0) {
+        if (v1 == 0 || v1 == '') {
             this.setState({
                 value: undefined,
-                inputYearValue: v1,
-                inputMonthValue: v2,
-                inputDayValue: v3,
-                inputHourValue: v4,
-                inputMinuteValue: v5
+                inputYearValue: 0,
+                inputMonthValue: 0,
+                inputDayValue: 0,
+                inputHourValue: 0,
+                inputMinuteValue: 0
             });
+            this.props.onChange(undefined);
             return;
         }
         if (v1 != 0 && v3 == 0) v3 = 1;
-        if (v1 == 0 && v2 == -1) {
-            this.setState({
-                value: undefined,
-                inputMonthValue: 0,
-            });
-            return;
-        }
         const { maxDate, minDate } = this.props;
         if (isNaN(v1) || isNaN(v2) || isNaN(v3) || isNaN(v4) || isNaN(v5)) return;  //filter the non-number character
         if (v1 > 9999 || v1 < 0 || v2 > 12 || v3 > 31 || v3 < 1 || v4 > 23 || v4 < 0 || v5 > 59 || v5 < 0) return; //filter the number which value overflow
@@ -113,7 +108,7 @@ function noop() {
         if (new Date(parseInt(v1), parseInt(v2)+1, 0).getDate() < v3) {
             v3 = new Date(parseInt(v1), parseInt(v2)+1, 0).getDate();
         }
-        _value.setDate(parseInt(v3)); 
+        _value.setDate(parseInt(v3));
         _value.setHours(parseInt(v4));
         _value.setMinutes(parseInt(v5));
         _value.setSeconds(0);
@@ -151,7 +146,7 @@ function noop() {
      * @param v4
      * @param v5
      */
-     checkStateValue(_v1, _v2, _v3, _v4, _v5) {
+    checkStateValue(_v1, _v2, _v3, _v4, _v5) {
         const {v1, v2, v3, v4, v5} = this.state;
         if (_v1 !== v1 && _v2 !== v2 && _v3 !== v3 && _v4 !== v4 && _v5 !== v5) {
             return true;
