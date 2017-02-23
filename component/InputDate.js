@@ -62,6 +62,13 @@ const InputDate = React.createClass({
         e.preventDefault();
         this.refs.input_minute.select();
     },
+    handleWheel(e) {
+        if (e.deltaY > 0) {
+            this.up(e);
+        } else {
+            this.down(e);
+        }
+    },
     render() {
         const props = {...this.props};
         const prefixCls = props.prefixCls;
@@ -123,6 +130,7 @@ const InputDate = React.createClass({
                         readOnly={ props.readOnly }
                         disabled={ props.disabled }
                         name={ props.name }
+                        onWheel={this.handleWheel}
                         onClick={ this.selectHour }
                         onChange={ this.onChangeHour }
                         value={ inputHourValue }
@@ -136,6 +144,7 @@ const InputDate = React.createClass({
                     onKeyDown={ this.onKeyDown }
                     readOnly={ props.readOnly }
                     disabled={ props.disabled }
+                    onWheel={this.handleWheel}
                     name={ props.name }
                     onClick={ this.selectMinute }
                     onChange={ this.onChangeMinute }

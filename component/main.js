@@ -57,11 +57,25 @@ const Component = React.createClass({
         });
         return dDate;
     },
+    handleWheel(e) {
+    	e.preventDefault();
+    	const { sDate } = this.state;
+    	let dDate = sDate ? new Date(sDate) : new Date();
+    	let day = dDate.getDate();
+    	if (e.deltaY < 0) {
+    		dDate.setDate(day-1);
+    	} else {
+    		dDate.setDate(day+1);
+    	}
+    	const dateValue = new Date(dDate);
+        const _sDate = dateValue.getFullYear() + '-' + (dateValue.getMonth() + 1) + '-' + dateValue.getDate();
+        this.handleDateChange(_sDate);
+    },
     render() {
         const { sDate, sTime } = this.state;
         return ( 
         	<div style={{width: '250px'}}>
-                <div style={{float: 'left', width: '65%'}}>
+                <div style={{float: 'left', width: '65%'}} onWheel={this.handleWheel}>
                     <Calendar format="YYYY-MM-DD" date={sDate} onChange={this.handleDateChange}/>
                 </div>
                 <div style={{width: '35%', float: 'left'}}>
