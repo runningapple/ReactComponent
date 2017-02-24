@@ -4,6 +4,23 @@ import InputDate from './InputDate';
 import Calendar from 'react-input-calendar'
 import './less/calendar.less';
 
+function formatDateTime(y, m, d) {
+    let result = '';
+    for (let i = 0; i < 4 - y.toString().length; i++) {
+        result += '0';
+    }
+    result += y + '-';
+    if (m < 10) {
+        result += '0';
+    }
+    result += m + '-';
+    if (d < 10) {
+        result += '0';
+    }
+    result += d;
+    return result;
+}
+
 const Component = React.createClass({
 	    getInitialState() {
         const { value } = this.props;
@@ -22,20 +39,20 @@ const Component = React.createClass({
             sTime: result[1]
         });
     },
-    initDateTime(value) {
+ 	initDateTime(value) {
         let sDate = undefined;
         let sTime = '00:00';
         if (value) {
             const dateValue = new Date(value);
-            sDate = dateValue.getFullYear() + '-' + (dateValue.getMonth() + 1) + '-' + dateValue.getDate();
+            sDate = formatDateTime(dateValue.getFullYear(), (dateValue.getMonth() + 1), dateValue.getDate());
             sTime = dateValue.getHours() + ':' + dateValue.getMinutes();
         }
         return [sDate, sTime];
     },
     handleDateChange(sDate) {
         const { sTime } = this.state;
-        const value = this.mergeDateAndTime(sDate, sTime);
-        // this.props.onChange(value); //when you use component in your project, cancel the annotation
+        const value = sDate === null ? undefined : this.mergeDateAndTime(sDate, sTime);
+        // this.props.onChange(value);
     },
     handleTimeChange(sTime) {
         const { sDate } = this.state;
@@ -43,11 +60,14 @@ const Component = React.createClass({
         // this.props.onChange(value); //when you use component in your project, cancel the annotation
     },
     mergeDateAndTime(sDate, sTime) {
-        let dDate = sDate ? new Date(sDate) : new Date();
-        const _hour = sTime.split(':')[0];
-        const _minute = sTime.split(':')[1];
-        const hour = _hour == '-1' ? '23' : _hour;
-        const minute = _minute == '-1' ? '59' : _minute;
+        if (typeof sDate === 'undefined') {
+            const today = new Date();
+            sDate = formatDateTime(today.getFullYear(), (today.getMonth() + 1), today.getDate());
+        }
+        const _sDate = sDate.replace(/-/g, '/');
+        let dDate = new Date(_sDate);
+        const hour = sTime.split(':')[0];
+        const minute = sTime.split(':')[1];
         dDate.setHours(parseInt(hour));
         dDate.setMinutes(parseInt(minute));
         this.setState({
@@ -58,17 +78,20 @@ const Component = React.createClass({
         return dDate;
     },
     handleWheel(e) {
-    	e.preventDefault();
-    	const { sDate } = this.state;
-    	let dDate = sDate ? new Date(sDate) : new Date();
-    	let day = dDate.getDate();
-    	if (e.deltaY < 0) {
-    		dDate.setDate(day-1);
-    	} else {
-    		dDate.setDate(day+1);
-    	}
-    	const dateValue = new Date(dDate);
-        const _sDate = dateValue.getFullYear() + '-' + (dateValue.getMonth() + 1) + '-' + dateValue.getDate();
+        e.preventDefault();
+        const { sDate } = this.state;
+        let dDate = new Date();
+        if (sDate) {
+            dDate = new Date(sDate.replace(/-/g, '/'));
+        }
+        let day = dDate.getDate();
+        if (e.deltaY > 0) {
+            dDate.setDate(day - 1);
+        } else {
+            dDate.setDate(day + 1);
+        }
+        const dateValue = new Date(dDate);
+        const _sDate = formatDateTime(dateValue.getFullYear(), (dateValue.getMonth() + 1), dateValue.getDate());
         this.handleDateChange(_sDate);
     },
     render() {
