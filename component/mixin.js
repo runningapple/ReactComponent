@@ -13,6 +13,7 @@ const SPEED = 200;
 const DELAY = 600;
 
 function leadingZeroHandler(value) {
+    if (typeof value === 'undefined' || isNaN(value)) return '00';
     if (value == 0) return '00';
     if (value < 10) return '0' + value;
     return value.toString();
@@ -39,8 +40,8 @@ export default {
         let _inputMinuteValue = 0;
         if (value) {
             _value = _value;
-            _inputHourValue = this.toPrecisionAsStep(value.split(":")[0]);
-            _inputMinuteValue = this.toPrecisionAsStep(value.split(":")[1]);
+            _inputHourValue = parseInt(value.split(":")[0]);
+            _inputMinuteValue = parseInt(value.split(":")[1]);
         }
         return {
             inputHourValue: leadingZeroHandler(_inputHourValue),
@@ -58,8 +59,8 @@ export default {
         let _inputMinuteValue = 0;
         if (value) {
             _value = value;
-            _inputHourValue = this.toPrecisionAsStep(value.split(":")[0]);
-            _inputMinuteValue = this.toPrecisionAsStep(value.split(":")[1]);
+            _inputHourValue = parseInt(value.split(":")[0]);
+            _inputMinuteValue = parseInt(value.split(":")[1]);
         }
         this.setState({
             inputHourValue: leadingZeroHandler(_inputHourValue),
@@ -77,6 +78,11 @@ export default {
             //});
             this.props.onChange(_value);
         } else {
+            //this.setState({
+            //    inputHourValue: v1,
+            //    inputMinuteValue: v2,
+            //    value: _value
+            //});
             //console.log('no change');
         }
     },
@@ -91,13 +97,13 @@ export default {
         const hour = this.getValueFromEvent(e).trim();
         this.setState({
             inputHourValue: hour
-        })
+        });
     },
     onChangeMinute(e) {
         let minute = this.getValueFromEvent(e).trim();
         this.setState({
             inputMinuteValue: minute
-        })
+        });
     },
     onHourFocus(...args) {
         this.setFocus(true);
@@ -139,7 +145,7 @@ export default {
             console.log('transform the input value error!!!');
             val = this.props.defaultValue;
         }
-        return this.toPrecisionAsStep(val);
+        return parseInt(val);
     },
     validateValue(value, minValue, maxValue) {
         if (typeof value === 'undefined' || value === '') value = minValue;
@@ -163,25 +169,6 @@ export default {
             minuteFocused: f2,
             currentFocuse: index
         });
-    },
-    getPrecision() {
-        const props = this.props;
-        const stepString = props.step.toString();
-        if (stepString.indexOf('e-') >= 0) {
-            return parseInt(stepString.slice(stepString.indexOf('e-') + 1), 10);
-        }
-        let precision = 0;
-        if (stepString.indexOf('.') >= 0) {
-            precision = stepString.length - stepString.indexOf('.') - 1;
-        }
-        return precision;
-    },
-    toPrecisionAsStep(num) {
-        if (isNaN(num) || num === '') {
-            return num;
-        }
-        const precision = this.getPrecision();
-        return Number(Number(num).toFixed(Math.abs(precision)));
     },
     upStep(val) {
         return val + 1;
